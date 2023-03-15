@@ -11,6 +11,6 @@ void setup() {
 void loop() {
   if(micros() - t < CTIME) {
     t = micros();
-
+    //sus
   }
 }
