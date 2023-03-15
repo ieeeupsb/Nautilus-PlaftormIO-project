@@ -19,6 +19,7 @@ int a,b,c,d,e;
 void setup()
 {
   AFMS.begin();
+  Serial.begin(9600);
   pinMode(ir1,INPUT);
   pinMode(ir2,INPUT);
   pinMode(ir3,INPUT);
@@ -34,5 +35,16 @@ void loop()
   c=digitalRead(ir3);
   d=digitalRead(ir4);
   e=digitalRead(ir5);
-  printf("sensor1:%d sensor2:%d sensor3:%d sensor4:%d sensor5:%d",a,b,c,d,e);
+  Serial.print("Sensor1: ");
+  Serial.print(a);
+  Serial.print("Sensor2: ");
+  Serial.print(b);
+  Serial.print("Sensor3: ");
+  Serial.print(c);
+  Serial.print("Sensor4: ");
+  Serial.print(d);
+  Serial.print("Sensor5: ");
+  Serial.print(e);
+
+  delay(10);
 }
