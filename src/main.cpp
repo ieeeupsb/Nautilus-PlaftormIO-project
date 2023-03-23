@@ -3,23 +3,35 @@
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 #include <SPI.h>
 
+#define ENCA_LEFT 23
+#define ENCB_LEFT 5
+#define ENCA_RIGHT 16
+#define ENCB_RIGHT 17
+
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *motor_left = AFMS.getMotor(1);
 Adafruit_DCMotor *motor_right = AFMS.getMotor(2);
 
-const int ir1 = 8;
-const int ir2 = 9;
-const int ir3 = 10;
-const int ir4 = 11;
-const int ir5 = 12;
-const int iman = 6;
-int a,b,c,d,e;
+volatile int leftEncCount = 0;
+volatile int rightEncCount = 0;
 
+const int ir1 = 39;
+const int ir2 = 36;
+const int ir3 = 34;
+const int ir4 = 35;
+const int ir5 = 32;
+const int iman = 19;
+
+void setupEncoders();
+void leftISR();
+void rightISR();
 
 void setup()
 {
+  setupEncoders();
   AFMS.begin();
-  Serial.begin(9600);
+  Serial.begin(115200);
+
   pinMode(ir1,INPUT);
   pinMode(ir2,INPUT);
   pinMode(ir3,INPUT);
@@ -30,21 +42,46 @@ void setup()
 
 void loop()
 {
-  a=digitalRead(ir1);
-  b=digitalRead(ir2);
-  c=digitalRead(ir3);
-  d=digitalRead(ir4);
-  e=digitalRead(ir5);
-  Serial.print("Sensor1: ");
-  Serial.print(a);
-  Serial.print("Sensor2: ");
-  Serial.print(b);
-  Serial.print("Sensor3: ");
-  Serial.print(c);
-  Serial.print("Sensor4: ");
-  Serial.print(d);
-  Serial.print("Sensor5: ");
-  Serial.print(e);
 
-  delay(10);
+  digitalWrite(iman, LOW);
+
+  Serial.print("Left Encoder Count: ");
+  Serial.print(leftEncCount);
+  Serial.print(" | Right Encoder Count: ");
+  Serial.println(rightEncCount);
+
+  delay(20);
+}
+
+// -------- //
+
+//Encoder Interrupt Service Routines (ISRs)
+//IRAM_ATTR makes sure that the code is stored in the internal RAM of the ESP32,
+//which is way faster than the flash memory that the code usually resides in.
+
+void IRAM_ATTR leftISR() {
+  if (digitalRead(ENCB_LEFT)) {
+    leftEncCount--;
+  }
+  else {
+    leftEncCount++;
+  }
+}
+
+void IRAM_ATTR rightISR() {
+  if (digitalRead(ENCB_RIGHT)) {
+    leftEncCount--;
+  }
+  else {
+    leftEncCount++;
+  }
+}
+
+void setupEncoders() {
+  pinMode(ENCA_LEFT, INPUT);
+  pinMode(ENCB_LEFT, INPUT);
+  pinMode(ENCA_RIGHT, INPUT);
+  pinMode(ENCB_RIGHT, INPUT);
+  attachInterrupt(digitalPinToInterrupt(ENCA_LEFT), leftISR, RISING);
+  attachInterrupt(digitalPinToInterrupt(ENCA_RIGHT), rightISR, RISING);
 }
