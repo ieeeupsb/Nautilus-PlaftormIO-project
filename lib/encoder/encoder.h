@@ -1,7 +1,7 @@
-#include <Arduino.h>
+#include "Arduino.h"
 
 // Voces podem adicionar cálculo de velocidade nessa biblioteca ou podem fazer mais pra frente (no MotorController por exemplo).
-class Encoder {
+class Encoder{
     public:
         Encoder(int pinA, int pinB);
 
