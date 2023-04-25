@@ -114,6 +114,8 @@ void robot_t::followLineLeft(IRLine_t& IRLine, float Vnom, float K)
 
 void robot_t::followLine(IRLine_t& IRLine){
 
+      IRLine.crosses = 0;
+
       if (IRLine.IR_values[0] > 500){
         v_req = 0.05;
         w_req = -1.5;
@@ -139,6 +141,7 @@ void robot_t::followLine(IRLine_t& IRLine){
 }
 
 void robot_t::turnLeft(){
+      IRLine.crosses = 0;
       rel_theta = 0;
       v_req = 0;
       w_req = states_w;
@@ -147,6 +150,7 @@ void robot_t::turnLeft(){
 }
 
 void robot_t::turnRight(){
+      IRLine.crosses = 0;
       rel_theta = 0;
       v_req = 0;
       w_req = -states_w;
