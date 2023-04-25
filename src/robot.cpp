@@ -30,15 +30,21 @@
 #include "robot.h"
 #include "IRLine.h"
 
+extern IRLine_t IRLine;
+
 robot_t::robot_t()
 {
   pulses_to_meters = 0.0000532;
-  wheel_dist = 0.125;
+  wheel_dist = 0.14;
   dv_max = 5;
   dw_max = 10;
 
   follow_v = 0.1;
-  follow_k = -0.08;
+  follow_k = -0.05;
+  states_v = 0.1;
+  states_w = 1.5;
+
+
 
   
 }
@@ -92,18 +98,105 @@ void robot_t::followLineLeft(IRLine_t& IRLine, float Vnom, float K)
   w_req = K * IRLine.pos_left;
 }
 
-void robot_t::followLine(IRLine_t& IRLine, float Vnom, float K)
-{
-  float pos;
+// void robot_t::followLine(IRLine_t& IRLine, float Vnom, float K)
+// {
+//   float pos;
 
-  if (fabs(IRLine.pos_left) < fabs(IRLine.pos_right)) {
-    pos = IRLine.pos_left;
-  } else {
-    pos = IRLine.pos_right;
-  }
+//   if (fabs(IRLine.pos_left) > fabs(IRLine.pos_right)) {
+//     pos = IRLine.pos_left;
+//   } else {
+//     pos = IRLine.pos_right;
+//   }
 
-  v_req = Vnom;
-  w_req = K * pos;
+//   v_req = Vnom;
+//   w_req = K * pos;
+// }
+
+void robot_t::followLine(IRLine_t& IRLine){
+
+      if (IRLine.IR_values[0] > 500){
+        v_req = 0.05;
+        w_req = -1.5;
+      }
+
+      if (IRLine.IR_values[1] > 500){
+        v_req = 0.1;
+        w_req = -1;
+       }
+
+      if (IRLine.IR_values[2] > 500){
+        v_req = 0.1;
+        w_req = 0;
+       }
+      if (IRLine.IR_values[3] > 500){
+        v_req = 0.1;
+        w_req = 1;
+       }
+      if (IRLine.IR_values[4] > 500){
+        v_req = 0.05;
+        w_req = 1.5;
+       }
+}
+
+void robot_t::turnLeft(){
+      rel_theta = 0;
+      v_req = 0;
+      w_req = states_w;
+      if(rel_theta < radians (-70)) w_req = 0;
+
+}
+
+void robot_t::turnRight(){
+      rel_theta = 0;
+      v_req = 0;
+      w_req = -states_w;
+      if(rel_theta > radians (70)) w_req = 0;
+
+}
+
+void robot_t::pickBox(){
+      v_req = states_v;
+      w_req = 0;
+      if(tof_dist < 0.04){ 
+        v_req = 0;
+        solenoid_state = 1;
+        v_req = -states_v;
+        rel_s = 0;
+        if(rel_s == 0.1){
+           rel_theta = 0;
+           v_req = 0;
+           w_req = states_w;
+           if(rel_theta > (170)){
+            w_req = 0;
+            v_req = states_v;
+            IRLine.crosses = 0;
+            if(IRLine.crosses == 1) v_req = 0;
+           }
+        }
+      }
+}
+
+void robot_t:: dropBox(){
+      rel_s = 0;
+      v_req = states_v;
+      w_req = 0;
+      if(rel_s >= 0.21){
+        v_req = 0;
+        solenoid_state = 0;
+        v_req = -states_v;
+        if(rel_s == 0.1){
+           rel_theta = 0;
+           v_req = 0;
+           w_req = states_w;
+           if(rel_theta > (170)){
+            w_req = 0;
+            v_req = states_v;
+            IRLine.crosses = 0;
+            if(IRLine.crosses == 1) v_req = 0;
+           }
+        }
+      }
+  
 }
 
 void robot_t::accelerationLimit(void)

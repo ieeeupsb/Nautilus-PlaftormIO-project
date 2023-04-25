@@ -67,6 +67,7 @@ class robot_t {
   int PWM_1_req, PWM_2_req;
   control_mode_t control_mode;
   float follow_v, follow_k;
+  float states_v, states_w;
   int T1, T2;
 
   PID_t PID1, PID2;
@@ -81,7 +82,12 @@ class robot_t {
 
   void followLineRight(IRLine_t& IRLine, float Vnom, float K);
   void followLineLeft(IRLine_t& IRLine, float Vnom, float K);
-  void followLine(IRLine_t& IRLine, float Vnom, float K);  
+  //void followLine(IRLine_t& IRLine, float Vnom, float K);  
+  void followLine(IRLine_t& IRLine);
+  void turnLeft();
+  void turnRight();
+  void pickBox();
+  void dropBox();
 
   void accelerationLimit(void);
   void VWToPWM(void);
