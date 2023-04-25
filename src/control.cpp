@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "proj_types.h"
 #include "robot.h"
-#include "IRline.h"
+#include "IRLine.h"
 
 extern IRLine_t IRLine;
 

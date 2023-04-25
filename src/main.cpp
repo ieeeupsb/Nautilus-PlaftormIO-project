@@ -38,6 +38,7 @@
 #include "Dijkstra.h"
 #include "Node.h"
 #include "direction.h"
+#include "scheduler.h"
 
 #include <WiFi.h>
 #include <WiFiUdp.h>
@@ -469,29 +470,29 @@ void setup()
   robot.state = 0;
   // robot.solenoid_state = 1;
 
-  // Djikstra Setup  
-  pathfinder.findPath(graph, 23, 19);
+  // Testing the the Scheduler
 
-  int* path = (int*)calloc(pathfinder.getPathSize(), sizeof(int));
-  path = pathfinder.getPathArray();
-
-  std::cout << "Our fucking minimum distance path\n";
-  for(int i = 0; i < pathfinder.getPathSize(); i++){
-      std::cout  << path[i] << "\n";
+  Box boxes[4]; 
+  for (size_t i = 0; i < 4; i++)
+  {
+    Box box;
+    box.color = BLUE;
+    box.pos = i;
+    box.num = i;
   }
-
-  Node *nodeVec = (Node *)calloc(N_NODES, sizeof(Node));
   
-  int size = pathfinder.getPathSize();
-  printf("size = %d\n", size); // Por alguma razao dependendo do caminho que tomamos ele falece
 
-  dir.nodeVector(nodeVec);
+  Scheduler scheduler(boxes, 4);
 
-  std::vector<std::string> dirVec = dir.definePath(path, size, nodeVec);
-  for(std::string i:dirVec){
-    Serial.printf("Modo ");
-    Serial.println(i.c_str());
+  for(auto inst: scheduler.getRoute(25)) {
+    Serial.println(inst.c_str());
   }
+
+  for(auto inst: scheduler.getRoute(25, boxes[1])) {
+    Serial.println(inst.c_str());
+  }
+
+
 
   // TO DO: 
   // 1- Criar um vetor de strings para passar como parametro do definePath por referencia para
