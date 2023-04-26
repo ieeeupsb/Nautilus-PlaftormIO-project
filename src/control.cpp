@@ -13,12 +13,14 @@ void control(robot_t& robot)
 
     typedef enum{
      // start,   // 0
-      stop,  // 0
-      fline,  // 1
-      tleft,  // 2
-      tright, // 3
-      pickb,  // 4
-      dropb   // 5
+      stop,     // 0
+      fline,    // 1
+      tleft,    // 2
+      tright,   // 3
+      pickb,    // 4
+      dropb,    // 5
+      leftline, // 6
+      rightline // 7
     }estados; 
 
     // Rules for the state evolution
@@ -69,7 +71,7 @@ void control(robot_t& robot)
       robot.setState(stop); 
 
       
-    } else if(robot.state == dropb && robot.tis >= 1000){
+    } else if(robot.state == dropb && robot.tis >= 1500){
       robot.rel_s = 0;
       robot.setState(21);
 
@@ -86,6 +88,14 @@ void control(robot_t& robot)
       
     } else if(robot.state == 23 && IRLine.crosses >= 1){
       robot.setState(stop);
+    
+      
+    } else if(robot.state == leftline && robot.rel_theta > radians(80)){
+      robot.setState(fline);
+    
+      
+    } else if(robot.state == rightline && robot.rel_theta < radians (-80)){
+      robot.setState(fline);
     
       
     }
@@ -193,6 +203,14 @@ void control(robot_t& robot)
 
      } else if (robot.state == 23) {  
        robot.followLine(IRLine);   
+       
+
+     } else if (robot.state == leftline) {  
+       robot.setRobotVW(0.02, 1.5);  
+       
+
+     } else if (robot.state == rightline) {  
+       robot.setRobotVW(0.02, -1.5);   
        
 
      }

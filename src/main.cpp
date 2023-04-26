@@ -854,9 +854,9 @@ void real_loop(void)
       
       if (instructions[instructionCounter] == "Line")
         robot.state = 1;
-      else if (instructions[instructionCounter] == "Left")
+      else if (instructions[instructionCounter] == "Left" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop"))
         robot.state = 2;
-      else if (instructions[instructionCounter] == "Right")
+      else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop"))
         robot.state = 3;
       else if (instructions[instructionCounter] == "Pick") {
         robot.state = 4;
@@ -867,7 +867,12 @@ void real_loop(void)
         robot.state = 5;
         // Assuming that the box will be delivered after this state
         currentBox.status = DELIVERED;
-      }
+
+      }else if (instructions[instructionCounter] == "Left")
+        robot.state = 6;
+
+      else if (instructions[instructionCounter] == "Right")
+        robot.state = 7;
 
       instructionCounter++;
     }
