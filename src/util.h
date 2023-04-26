@@ -40,16 +40,16 @@ Color changeToColor(char c) {
 
 // Unsafe function
 // second argument must have size 4
-bool initialize_boxes(long int msg,Box *arr) {
-    if((char)(msg >> 40) != 'W' || (char)(msg >> 32) != 'U')
-        return false;
-    arr[0].color = changeToColor((char)(msg >> 24));
-    arr[0].num = 0;
-    arr[1].color = changeToColor((char)(msg >> 16));
-    arr[1].num = 1;
-    arr[2].color = changeToColor((char)(msg >> 8));
-    arr[2].num = 2;
-    arr[3].color = changeToColor((char)(msg));
-    arr[3].num = 3;
-    return true;
-}
+// bool initialize_boxes(long int msg,Box *arr) {
+//     if((char)(msg >> 40) != 'W' || (char)(msg >> 32) != 'U')
+//         return false;
+//     arr[0].color = changeToColor((char)(msg >> 24));
+//     arr[0].num = 0;
+//     arr[1].color = changeToColor((char)(msg >> 16));
+//     arr[1].num = 1;
+//     arr[2].color = changeToColor((char)(msg >> 8));
+//     arr[2].num = 2;
+//     arr[3].color = changeToColor((char)(msg));
+//     arr[3].num = 3;
+//     return true;
+// }
