@@ -30,8 +30,9 @@ void control(robot_t& robot)
     if(robot.state == start && robot.tis >= 2000){
       //robot.setState(fline);
       
-    } else if(robot.state == fline){
-      //robot.setState(tleft);
+    } else if(robot.state == fline && IRLine.crosses >= 1){
+      IRLine.crosses = 0;
+      robot.setState(stop);
       
     } else if(robot.state == tleft && robot.rel_theta > radians (70)){
       robot.setState(stop);

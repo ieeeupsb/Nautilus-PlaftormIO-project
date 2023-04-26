@@ -97,7 +97,7 @@ channels_t serial_channels, udp_channels;
 
 IRLine_t IRLine;
 
-#define IRrecvPIN 26
+#define IRrecvPIN 16
 
 IRrecv irrecv(IRrecvPIN);       // IR receiver
 decode_results results; // IR receiver results
@@ -114,7 +114,7 @@ robot_t robot;
 
 void setSolenoidPWM(int new_PWM);
 
-#define TOUCHSW_pin 02 //(Uno D2)
+#define TOUCHSW_pin 17 //(Uno D2)
 
 void setSolenoidState()
 {
