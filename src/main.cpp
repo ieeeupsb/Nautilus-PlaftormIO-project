@@ -489,6 +489,8 @@ void setup()
     box.color = BLUE;
     box.pos = i;
     box.num = i;
+    boxes[i] = box;
+
   }
   
 

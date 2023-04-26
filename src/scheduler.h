@@ -11,7 +11,6 @@
 class Scheduler
 {
 private:
-    Dijkstra dijkstra = Dijkstra(N_NODES);
     Direction dir;
     std::priority_queue<Box, std::vector<Box>, boxComparision> queue;
     std::vector<Port> deliveryPorts;
@@ -46,14 +45,23 @@ Scheduler::~Scheduler()
 }
 
 std::vector<std::string> Scheduler::getRoute(int source, Box box) {
-
+    Dijkstra dijkstra = Dijkstra(N_NODES);
+    
     // TODO: Chose which port to go based on the color
     Port destPort = getAvailablePort();
-
+    // Serial.printf("No de destino: ");
+    // Serial.println(destPort.pos);
     // If box is waiting then we need to pick it up
     dijkstra.findPath(graph, source, destPort.pos);
         
     auto path = dijkstra.getPathArray();
+    // Serial.printf("Minimun Path is: [ ");
+    // int a= dijkstra.getPathSize();
+    // for(int i = 0; i < a; i++){
+    //     Serial.print(path[i]);
+    //     Serial.printf(" ");
+    // }
+    // Serial.println("]");
 
     Node *nodeVec = (Node *)calloc(N_NODES, sizeof(Node));
     dir.nodeVector(nodeVec);
@@ -65,6 +73,8 @@ std::vector<std::string> Scheduler::getRoute(int source, Box box) {
 }
 
 std::vector<std::string> Scheduler::getRoute(int source) {
+    Dijkstra dijkstra = Dijkstra(N_NODES);
+    
     Box box = queue.top();
     queue.pop();
 
