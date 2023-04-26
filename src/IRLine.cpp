@@ -33,8 +33,8 @@ IRLine_t::IRLine_t()
 {
   IR_WaterLevel = 100;
   IR_tresh = 512;
-  cross_tresh = 3;
-  black_cross_level = 3;
+  cross_tresh = 2;
+  black_cross_level = 2;
 }
 
 void IRLine_t::calibrate(void)
