@@ -19,8 +19,9 @@ private:
 public:
     Scheduler(Box* boxes, unsigned int numBoxes);
     ~Scheduler();
-    std::vector<std::string> getRoute(unsigned int source, Box box);
-    std::vector<std::string> getRoute(unsigned int source);
+    std::vector<std::string> getRoute(int source, Box box);
+    std::vector<std::string> getRoute(int source);
+    Box getBox();
 };
 
 Scheduler::Scheduler(Box* boxes, unsigned int numBoxes) {
@@ -44,7 +45,7 @@ Scheduler::~Scheduler()
 {
 }
 
-std::vector<std::string> Scheduler::getRoute(unsigned int source, Box box) {
+std::vector<std::string> Scheduler::getRoute(int source, Box box) {
 
     // TODO: Chose which port to go based on the color
     Port destPort = getAvailablePort();
@@ -63,7 +64,7 @@ std::vector<std::string> Scheduler::getRoute(unsigned int source, Box box) {
     return dirVec;
 }
 
-std::vector<std::string> Scheduler::getRoute(unsigned int source) {
+std::vector<std::string> Scheduler::getRoute(int source) {
     Box box = queue.top();
     queue.pop();
 
@@ -79,6 +80,10 @@ std::vector<std::string> Scheduler::getRoute(unsigned int source) {
     std::vector<std::string> dirVec = dir.definePath(path, size, nodeVec);
       
     return dirVec;
+}
+
+Box Scheduler::getBox() {
+    return queue.top();
 }
 
 Port Scheduler::getAvailablePort() {

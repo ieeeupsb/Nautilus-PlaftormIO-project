@@ -8,7 +8,7 @@ enum Color{
 struct Box
 {
     int num;
-    unsigned int pos;
+    int pos;
     Color color;
 };
 
