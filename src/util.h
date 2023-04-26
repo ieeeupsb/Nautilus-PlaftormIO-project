@@ -1,8 +1,14 @@
 
-enum Color{
+enum Color {
     BLUE,
     GREEN,
     RED
+};
+
+enum Status {
+    WAINTING,
+    HOLDING,
+    DELIVERED
 };
 
 struct Box
@@ -10,6 +16,7 @@ struct Box
     int num;
     int pos;
     Color color;
+    Status status;
 };
 
 struct Port {

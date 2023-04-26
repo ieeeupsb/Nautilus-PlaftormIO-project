@@ -326,9 +326,10 @@ void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info)
   //WiFi.begin(ssid, password);
 }
 
-
-  Dijkstra pathfinder(N_NODES);
-  Direction dir;
+Scheduler scheduler(25);
+std::vector<std::string> instructions;
+int instructionCounter = 0;
+Box currentBox;
 
 void setup()
 {
@@ -489,22 +490,19 @@ void setup()
     box.color = BLUE;
     box.pos = i;
     box.num = i;
+    box.status = WAINTING;
     boxes[i] = box;
 
   }
   
 
-  Scheduler scheduler(boxes, 4);
+  scheduler.setUp(boxes, 4);
+  currentBox = scheduler.getBox();
+  instructions = scheduler.getRoute();
 
-  for(auto inst: scheduler.getRoute(25)) {
+  for(auto inst: instructions) {
     Serial.println(inst.c_str());
   }
-
-  for(auto inst: scheduler.getRoute(25, boxes[1])) {
-    Serial.println(inst.c_str());
-  }
-
-
 
   // TO DO: 
   // 1- Criar um vetor de strings para passar como parametro do definePath por referencia para
@@ -743,9 +741,14 @@ void real_loop(void)
     if (b == ')') {robot.v -= -0.1; robot.w = 0;}
     //if (b == '?') {robot.v1_PWM = 0; robot.v2_PWM = 0;} 
     if (b == '?') {robot.v = 0; robot.w = 0;}
-    if (b == '\\') robot.state = 0;
-    if (b == '*') robot.state = 20;
-    if (b == 'i') robot.state = 25;
+    if (b == 'z') robot.state = 0;
+    if (b == 'i') robot.state = 101;
+    if (b == '*') robot.state = 100;
+    if (b == 'f') robot.state = 1;
+    if (b == 'l') robot.state = 2;
+    if (b == 'r') robot.state = 3;
+    if (b == 'p') robot.state = 4;
+    if (b == 'd') robot.state = 5;
     serial_channels.StateMachine(b);
   }
 
@@ -798,20 +801,23 @@ void real_loop(void)
     
     if(udp_on) send_udp_channels();
     
-    Serial.print(F(" "));
-    Serial.print(ip.toString());
+    //Serial.print(F(" "));
+    //Serial.print(ip.toString());
 
     Serial.print(F(" St: "));
     serial_print_format(robot.state, 4);
 
+    Serial.print(F(" Iman: "));
+    serial_print_format(robot.solenoid_state, 4);
+
     Serial.print(F(" Rel_Theta: "));
     serial_print_format(robot.rel_theta, 4);
 
-    Serial.print(F(" E1: "));
-    serial_print_format(robot.enc1, 4);
+    // Serial.print(F(" E1: "));
+    // serial_print_format(robot.enc1, 4);
 
-    Serial.print(F(" E2: "));
-    serial_print_format(robot.enc2, 4);
+    // Serial.print(F(" E2: "));
+    // serial_print_format(robot.enc2, 4);
 
     byte c;
     for (c = 0; c < 5; c++) {
@@ -819,11 +825,53 @@ void real_loop(void)
        Serial.print(IRLine.IR_values[c]);
     }
 
-    Serial.print(F(" T: "));
-    serial_print_format(robot.TouchSwitch, 4);
+    //Serial.print(F(" T: "));
+    //serial_print_format(robot.TouchSwitch, 4);
 
     Serial.print(F(" Tof: "));
     serial_print_format(robot.tof_dist, 4);
+
+    Serial.print(F(" Black_level: "));
+    serial_print_format(IRLine.blacks, 4);
+
+    Serial.print(F(" Crosses: "));
+    serial_print_format(IRLine.crosses, 4);
+    
+    Serial.print(F(" Comando: "));
+    serial_print_format(instructionCounter, 4);
+
+    if(robot.state == 101) {
+
+      if (instructionCounter == instructions.size()) {
+        if (currentBox.status == HOLDING) {
+          instructions = scheduler.getRoute(currentBox);
+        } else {
+          instructions = scheduler.getRoute();
+        }
+        
+        instructionCounter = 0;
+      }
+      
+      if (instructions[instructionCounter] == "Line")
+        robot.state = 1;
+      else if (instructions[instructionCounter] == "Left")
+        robot.state = 2;
+      else if (instructions[instructionCounter] == "Right")
+        robot.state = 3;
+      else if (instructions[instructionCounter] == "Pick") {
+        robot.state = 4;
+        // Assuming that after this state the box is picked
+        currentBox.status = HOLDING;
+      }
+      else if (instructions[instructionCounter] == "Drop") {
+        robot.state = 5;
+        // Assuming that the box will be delivered after this state
+        currentBox.status = DELIVERED;
+      }
+
+      instructionCounter++;
+    }
+    
 
     /*
     Serial.print(F(" V: "));

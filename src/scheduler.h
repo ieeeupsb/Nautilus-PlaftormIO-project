@@ -15,15 +15,23 @@ private:
     std::priority_queue<Box, std::vector<Box>, boxComparision> queue;
     std::vector<Port> deliveryPorts;
     Port getAvailablePort();
+    int currentPosition;
 public:
-    Scheduler(Box* boxes, unsigned int numBoxes);
+    Scheduler(int startPosition);
     ~Scheduler();
-    std::vector<std::string> getRoute(int source, Box box);
-    std::vector<std::string> getRoute(int source);
+    void setUp(Box *boxes, unsigned int numBoxes);
+    std::vector<std::string> getRoute(Box box);
+    std::vector<std::string> getRoute();
     Box getBox();
 };
 
-Scheduler::Scheduler(Box* boxes, unsigned int numBoxes) {
+Scheduler::Scheduler(int startPosition) {
+    currentPosition = startPosition;
+}
+
+Scheduler::~Scheduler() {}
+
+void Scheduler::setUp(Box *boxes, unsigned int numBoxes) {
     for (auto deliveryNode : deliveryNodes) {
         Port port;
         port.pos = deliveryNode;
@@ -37,24 +45,22 @@ Scheduler::Scheduler(Box* boxes, unsigned int numBoxes) {
         queue.push(boxes[i]);
     }
     
-    
+
 }
 
-Scheduler::~Scheduler()
-{
-}
-
-std::vector<std::string> Scheduler::getRoute(int source, Box box) {
+std::vector<std::string> Scheduler::getRoute(Box box) {
     Dijkstra dijkstra = Dijkstra(N_NODES);
     
     // TODO: Chose which port to go based on the color
     Port destPort = getAvailablePort();
+
     // Serial.printf("No de destino: ");
     // Serial.println(destPort.pos);
     // If box is waiting then we need to pick it up
-    dijkstra.findPath(graph, source, destPort.pos);
+    dijkstra.findPath(graph, currentPosition, destPort.pos);
         
     auto path = dijkstra.getPathArray();
+    currentPosition = path[dijkstra.getPathSize() - 1];
     // Serial.printf("Minimun Path is: [ ");
     // int a= dijkstra.getPathSize();
     // for(int i = 0; i < a; i++){
@@ -72,16 +78,17 @@ std::vector<std::string> Scheduler::getRoute(int source, Box box) {
     return dirVec;
 }
 
-std::vector<std::string> Scheduler::getRoute(int source) {
+std::vector<std::string> Scheduler::getRoute() {
     Dijkstra dijkstra = Dijkstra(N_NODES);
     
     Box box = queue.top();
     queue.pop();
 
     // If box is waiting then we need to pick it up
-    dijkstra.findPath(graph, source, box.pos);
+    dijkstra.findPath(graph, currentPosition, box.pos);
         
     auto path = dijkstra.getPathArray();
+    currentPosition = path[dijkstra.getPathSize() - 1];
 
     Node *nodeVec = (Node *)calloc(N_NODES, sizeof(Node));
     dir.nodeVector(nodeVec);

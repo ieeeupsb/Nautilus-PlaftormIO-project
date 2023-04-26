@@ -44,9 +44,6 @@ robot_t::robot_t()
   states_v = 0.1;
   states_w = 1.5;
 
-
-
-  
 }
 
 void robot_t::odometry(void)
@@ -114,18 +111,6 @@ void robot_t::followLineLeft(IRLine_t& IRLine, float Vnom, float K)
 
 void robot_t::followLine(IRLine_t& IRLine){
 
-      IRLine.crosses = 0;
-
-      if (IRLine.IR_values[0] > 500){
-        v_req = 0.05;
-        w_req = -1.5;
-      }
-
-      if (IRLine.IR_values[1] > 500){
-        v_req = 0.1;
-        w_req = -1;
-       }
-
       if (IRLine.IR_values[2] > 500){
         v_req = 0.1;
         w_req = 0;
@@ -138,69 +123,15 @@ void robot_t::followLine(IRLine_t& IRLine){
         v_req = 0.05;
         w_req = 1.5;
        }
-}
-
-void robot_t::turnLeft(){
-      IRLine.crosses = 0;
-      rel_theta = 0;
-      v_req = 0;
-      w_req = states_w;
-      if(rel_theta < radians (-70)) w_req = 0;
-
-}
-
-void robot_t::turnRight(){
-      IRLine.crosses = 0;
-      rel_theta = 0;
-      v_req = 0;
-      w_req = -states_w;
-      if(rel_theta > radians (70)) w_req = 0;
-
-}
-
-void robot_t::pickBox(){
-      v_req = states_v;
-      w_req = 0;
-      if(tof_dist < 0.04){ 
-        v_req = 0;
-        solenoid_state = 1;
-        v_req = -states_v;
-        rel_s = 0;
-        if(rel_s == 0.1){
-           rel_theta = 0;
-           v_req = 0;
-           w_req = states_w;
-           if(rel_theta > (170)){
-            w_req = 0;
-            v_req = states_v;
-            IRLine.crosses = 0;
-            if(IRLine.crosses == 1) v_req = 0;
-           }
-        }
+      if (IRLine.IR_values[0] > 500){
+        v_req = 0.05;
+        w_req = -1.5;
       }
-}
 
-void robot_t:: dropBox(){
-      rel_s = 0;
-      v_req = states_v;
-      w_req = 0;
-      if(rel_s >= 0.21){
-        v_req = 0;
-        solenoid_state = 0;
-        v_req = -states_v;
-        if(rel_s == 0.1){
-           rel_theta = 0;
-           v_req = 0;
-           w_req = states_w;
-           if(rel_theta > (170)){
-            w_req = 0;
-            v_req = states_v;
-            IRLine.crosses = 0;
-            if(IRLine.crosses == 1) v_req = 0;
-           }
-        }
-      }
-  
+      if (IRLine.IR_values[1] > 500){
+        v_req = 0.1;
+        w_req = -1;
+       }
 }
 
 void robot_t::accelerationLimit(void)
