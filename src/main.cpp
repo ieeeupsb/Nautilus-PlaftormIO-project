@@ -48,6 +48,10 @@
 #include <vector>
 #include <string>
 
+#include <IRremoteESP8266.h>
+#include <IRrecv.h>
+#include <IRutils.h>
+
 #include <VL53L0X.h>
 VL53L0X tof;
 
@@ -93,6 +97,11 @@ channels_t serial_channels, udp_channels;
 
 IRLine_t IRLine;
 
+#define IRrecvPIN 26
+
+IRrecv irrecv(IRrecvPIN);       // IR receiver
+decode_results results; // IR receiver results
+
 hw_timer_t * timer_enc = NULL;
 
 #define ENC1_A 27
@@ -105,7 +114,7 @@ robot_t robot;
 
 void setSolenoidPWM(int new_PWM);
 
-#define TOUCHSW_pin 26 //(Uno D2)
+#define TOUCHSW_pin 02 //(Uno D2)
 
 void setSolenoidState()
 {
@@ -385,6 +394,7 @@ void setup()
     //M2->run(FORWARD); 
     //M2->run(BACKWARD);
 
+    irrecv.enableIRIn();
   }
 
   // AD configuration
@@ -633,6 +643,13 @@ void process_serial_packet(char channel, uint32_t value, channels_t& obj)
 
 }
 
+void infrared_receiver_decode(){
+  if (irrecv.decode(&results)) {
+    serialPrintUint64(results.value, HEX);
+    Serial.println("");
+    irrecv.resume();  // Receive the next value
+  }
+}
 void loop(void)
 {
   if (UsingSimulator) {
