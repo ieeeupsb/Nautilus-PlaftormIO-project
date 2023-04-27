@@ -15,6 +15,7 @@ private:
     std::priority_queue<Box, std::vector<Box>, boxComparision> queue;
     std::vector<Port> deliveryPorts;
     int currentPosition;
+    Node *nodeVec;
 public:
     Scheduler(int startPosition);
     ~Scheduler();
@@ -23,13 +24,16 @@ public:
     std::vector<std::string> getRoute();
     Box getBox();
     Port getAvailablePort();
+    Node* getNodeVec();
 };
 
 Scheduler::Scheduler(int startPosition) {
     currentPosition = startPosition;
 }
 
-Scheduler::~Scheduler() {}
+Scheduler::~Scheduler() {
+    free(nodeVec);
+}
 
 void Scheduler::setUp(Box *boxes, unsigned int numBoxes) {
     for (auto deliveryNode : deliveryNodes) {
@@ -93,7 +97,7 @@ std::vector<std::string> Scheduler::getRoute(Box box, Port destPort) {
     // }
     // Serial.println("]");
 
-    Node *nodeVec = (Node *)calloc(N_NODES, sizeof(Node));
+    nodeVec = (Node *)calloc(N_NODES, sizeof(Node));
     dir.nodeVector(nodeVec);
 
     int size = dijkstra.getPathSize();
@@ -114,7 +118,7 @@ std::vector<std::string> Scheduler::getRoute() {
     auto path = dijkstra.getPathArray();
     currentPosition = path[dijkstra.getPathSize() - 1];
 
-    Node *nodeVec = (Node *)calloc(N_NODES, sizeof(Node));
+    nodeVec = (Node *)calloc(N_NODES, sizeof(Node));
     dir.nodeVector(nodeVec);
 
     int size = dijkstra.getPathSize();
@@ -132,4 +136,8 @@ Port Scheduler::getAvailablePort() {
         if (port.occupied == false)
             return port;
     }
+}
+
+Node* Scheduler::getNodeVec() {
+    return nodeVec;
 }
