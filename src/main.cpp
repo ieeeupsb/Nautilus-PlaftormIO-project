@@ -40,6 +40,7 @@
 #include "direction.h"
 #include "scheduler.h"
 
+
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
@@ -97,10 +98,10 @@ channels_t serial_channels, udp_channels;
 
 IRLine_t IRLine;
 
-#define IRrecvPIN 16
-
-IRrecv irrecv(IRrecvPIN);       // IR receiver
-decode_results results; // IR receiver results
+#define RXD2 16 // Era IRrecvPIN
+char irrecvbuffer[5];
+char irrecvdata;
+byte irrecvbuffer_index = -1;
 
 hw_timer_t * timer_enc = NULL;
 
@@ -396,7 +397,7 @@ void setup()
     //M2->run(FORWARD); 
     //M2->run(BACKWARD);
 
-    irrecv.enableIRIn();
+    // irrecv.enableIRIn();
   }
 
   // AD configuration
@@ -484,18 +485,47 @@ void setup()
 
   // Testing the the Scheduler
 
+  // Box boxes[4]; 
+  // for (size_t i = 0; i < 4; i++)
+  // {
+  //   Box box;
+  //   box.pos = i;
+  //   box.num = i;
+  //   box.color = BLUE;
+  //   box.status = WAINTING;
+    
+  //   boxes[i] = box;
+
+  // }
+  
+  
   Box boxes[4]; 
   for (size_t i = 0; i < 4; i++)
   {
     Box box;
-    box.color = BLUE;
     box.pos = i;
     box.num = i;
     box.status = WAINTING;
-    boxes[i] = box;
+    if(irrecvbuffer[i] == 'w')
+      box.color = RED;
 
+    else if(irrecvbuffer[i] == 'u')
+      box.color = GREEN;
+    
+    else if(irrecvbuffer[i] == 'o')
+      box.color = BLUE;
+    
+    boxes[i] = box;
+    
+    Serial.printf("No da caixa : ");
+    Serial.print(boxes[i].pos);
+    Serial.printf("   ");
+    Serial.printf("Status da caixa : ");
+    Serial.print(boxes[i].status);
+    Serial.printf("   ");
+    Serial.printf("Cor da caixa : ");
+    Serial.println(boxes[i].color);
   }
-  
 
   scheduler.setUp(boxes, 4);
   currentBox = scheduler.getBox();
@@ -505,6 +535,9 @@ void setup()
   for(auto inst: instructions) {
     Serial.println(inst.c_str());
   }
+
+
+  Serial2.begin(2400, SERIAL_8N1, RXD2);
 
   // TO DO: 
   // 1- Criar um vetor de strings para passar como parametro do definePath por referencia para
@@ -645,13 +678,14 @@ void process_serial_packet(char channel, uint32_t value, channels_t& obj)
 
 }
 
-void infrared_receiver_decode(){
-  if (irrecv.decode(&results)) {
-    serialPrintUint64(results.value, HEX);
-    Serial.println("");
-    irrecv.resume();  // Receive the next value
-  }
-}
+// void infrared_receiver_decode(){
+//   if (irrecv.decode(&results)) {
+//     serialPrintUint64(results.value, HEX);
+//     Serial.println("");
+//     irrecv.resume();  // Receive the next value
+//   }
+// }
+
 void loop(void)
 {
   if (UsingSimulator) {
@@ -805,46 +839,47 @@ void real_loop(void)
     
     //Serial.print(F(" "));
     //Serial.print(ip.toString());
+  
+    // // // Serial.print(F(" St: "));
+    // // // serial_print_format(robot.state, 4);
 
-    Serial.print(F(" St: "));
-    serial_print_format(robot.state, 4);
+    // // // Serial.print(F(" Iman: "));
+    // // // serial_print_format(robot.solenoid_state, 4);
 
-    Serial.print(F(" Iman: "));
-    serial_print_format(robot.solenoid_state, 4);
+    // // // Serial.print(F(" Rel_Theta: "));
+    // // // serial_print_format(robot.rel_theta, 4);
 
-    Serial.print(F(" Rel_Theta: "));
-    serial_print_format(robot.rel_theta, 4);
+    // // // Serial.print(F(" Rel_s: "));
+    // // // serial_print_format(robot.rel_s, 4);
 
-    Serial.print(F(" Rel_s: "));
-    serial_print_format(robot.rel_s, 4);
+    // // // // Serial.print(F(" E1: "));
+    // // // // serial_print_format(robot.enc1, 4);
 
-    // Serial.print(F(" E1: "));
-    // serial_print_format(robot.enc1, 4);
-
-    // Serial.print(F(" E2: "));
-    // serial_print_format(robot.enc2, 4);
+    // // // // Serial.print(F(" E2: "));
+    // // // // serial_print_format(robot.enc2, 4);
 
     // Serial.printf("                                                                                                            ");
-    byte c;
-    for (c = 5; c >= 1; c--) {
-       Serial.print(" ");
-       Serial.print(IRLine.IR_values[c-1]);
-    }
+    // byte c;
+    // for (c = 5; c >= 1; c--) {
+    //    Serial.print(" ");
+    //    Serial.print(IRLine.IR_values[c-1]);
+    // }
 
-    //Serial.print(F(" T: "));
-    //serial_print_format(robot.TouchSwitch, 4);
+    // // // //Serial.print(F(" T: "));
+    // // // //serial_print_format(robot.TouchSwitch, 4);
 
-    Serial.print(F(" Tof: "));
-    serial_print_format(robot.tof_dist, 4);
+    // Serial.print(F(" Tof: "));
+    // serial_print_format(robot.tof_dist, 4);
 
-    Serial.print(F(" Black_level: "));
-    serial_print_format(IRLine.blacks, 4);
+    // Serial.print(F(" Black_level: "));
+    // serial_print_format(IRLine.blacks, 4);
 
-    Serial.print(F(" Crosses: "));
-    serial_print_format(IRLine.crosses, 4);
+    // Serial.print(F(" Crosses: "));
+    // serial_print_format(IRLine.crosses, 4);
     
-    Serial.print(F(" Comando: "));
-    serial_print_format(instructionCounter, 4);
+    // Serial.print(F(" Comando: "));
+    // serial_print_format(instructionCounter, 4);
+
 
     if(robot.state == 0) {
 
@@ -903,6 +938,28 @@ void real_loop(void)
     Serial.println();
   }
 
+  if (Serial2.available()) {
+      irrecvdata = Serial2.read();  
+
+      if(irrecvdata == 'U') {
+        Serial.print("!");
+      } else if(irrecvdata == 'W') {
+        irrecvbuffer_index = 0;
+      } else if(irrecvbuffer_index >= 0) {
+        irrecvbuffer[irrecvbuffer_index] = irrecvdata;
+        irrecvbuffer_index++;
+        if(irrecvbuffer_index >= 4) {
+          irrecvbuffer[irrecvbuffer_index] = '\0';
+          irrecvbuffer_index = -1;
+          Serial.println("Received Instruction!");
+          Serial.println(irrecvbuffer);
+        }
+      } else {
+        Serial.write(irrecvdata);
+        Serial.println();
+      }
+
+  }
 }
 
 
