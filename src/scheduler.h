@@ -14,15 +14,15 @@ private:
     Direction dir;
     std::priority_queue<Box, std::vector<Box>, boxComparision> queue;
     std::vector<Port> deliveryPorts;
-    Port getAvailablePort();
     int currentPosition;
 public:
     Scheduler(int startPosition);
     ~Scheduler();
     void setUp(Box *boxes, unsigned int numBoxes);
-    std::vector<std::string> getRoute(Box box);
+    std::vector<std::string> getRoute(Box box, Port port);
     std::vector<std::string> getRoute();
     Box getBox();
+    Port getAvailablePort();
 };
 
 Scheduler::Scheduler(int startPosition) {
@@ -48,11 +48,35 @@ void Scheduler::setUp(Box *boxes, unsigned int numBoxes) {
 
 }
 
-std::vector<std::string> Scheduler::getRoute(Box box) {
+std::vector<std::string> Scheduler::getRoute(Box box, Port destPort) {
     Dijkstra dijkstra = Dijkstra(N_NODES);
     
+    Serial.println();
+    Serial.printf("Porta ");
+    Serial.print(destPort.pos);
+    Serial.printf(".occupied = ");
+    Serial.println(destPort.occupied);
     // TODO: Chose which port to go based on the color
-    Port destPort = getAvailablePort();
+    if(destPort.occupied == true){
+        for(int i = 0; i<deliveryPorts.size(); i++){
+            if (deliveryPorts[i].pos == destPort.pos)
+                deliveryPorts[i].occupied = destPort.occupied; 
+        }
+        destPort = getAvailablePort();
+
+        Serial.println();
+        Serial.printf("Porta ");
+        Serial.print(destPort.pos);
+        Serial.printf(".occupied = ");
+        Serial.println(destPort.occupied);
+    }
+    else {
+        Serial.println();
+        Serial.printf("Porta ");
+        Serial.print(destPort.pos);
+        Serial.printf(".occupied = ");
+        Serial.println(destPort.occupied);
+    }
 
     // Serial.printf("No de destino: ");
     // Serial.println(destPort.pos);

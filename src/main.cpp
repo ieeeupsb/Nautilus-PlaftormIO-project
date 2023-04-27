@@ -330,6 +330,7 @@ Scheduler scheduler(25);
 std::vector<std::string> instructions;
 int instructionCounter = 0;
 Box currentBox;
+Port currentPort;
 
 void setup()
 {
@@ -498,8 +499,9 @@ void setup()
 
   scheduler.setUp(boxes, 4);
   currentBox = scheduler.getBox();
+  currentPort = scheduler.getAvailablePort();
   instructions = scheduler.getRoute();
-
+  Serial.println("Aqui");
   for(auto inst: instructions) {
     Serial.println(inst.c_str());
   }
@@ -813,6 +815,9 @@ void real_loop(void)
     Serial.print(F(" Rel_Theta: "));
     serial_print_format(robot.rel_theta, 4);
 
+    Serial.print(F(" Rel_s: "));
+    serial_print_format(robot.rel_s, 4);
+
     // Serial.print(F(" E1: "));
     // serial_print_format(robot.enc1, 4);
 
@@ -841,11 +846,11 @@ void real_loop(void)
     Serial.print(F(" Comando: "));
     serial_print_format(instructionCounter, 4);
 
-    if(robot.state == 0) {
+    if(robot.state == 101) {
 
       if (instructionCounter == instructions.size()) {
         if (currentBox.status == HOLDING) {
-          instructions = scheduler.getRoute(currentBox);
+          instructions = scheduler.getRoute(currentBox, currentPort);
         } else {
           instructions = scheduler.getRoute();
         }
@@ -868,7 +873,9 @@ void real_loop(void)
         robot.state = 5;
         // Assuming that the box will be delivered after this state
         currentBox.status = DELIVERED;
-
+        currentBox = scheduler.getBox();
+        currentPort = scheduler.getAvailablePort();
+        currentPort.occupied = true;
       }else if (instructions[instructionCounter] == "Left")
         robot.state = 6;
 

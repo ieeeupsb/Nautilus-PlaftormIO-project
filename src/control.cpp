@@ -51,7 +51,7 @@ void control(robot_t& robot)
       robot.setState(11); 
       
       
-    } else if(robot.state == 11 && robot.tis > 1000){
+    } else if(robot.state == 11 && robot.tis > 1500){
       robot.rel_s = 0;
       robot.setState(12); 
       
@@ -61,7 +61,7 @@ void control(robot_t& robot)
       robot.setState(13); 
       
       
-    } else if(robot.state == 13 && robot.rel_theta > radians(170)){
+    } else if(robot.state == 13 && robot.rel_theta < radians(-170)){
       IRLine.crosses = 0;
       robot.setState(stop); 
 
@@ -79,27 +79,27 @@ void control(robot_t& robot)
       robot.setState(21);
 
       
-    } else if(robot.state == 21 && robot.rel_s <= -0.03){
+    } else if(robot.state == 21 && robot.rel_s <= -0.08){
     robot.rel_theta = 0;
     robot.setState(22);
 
       
     } else if(robot.state == 22 && robot.rel_theta < radians(-170)){
       IRLine.crosses = 0;
-      robot.setState(23);
+      robot.setState(stop);
 
       
-    } else if(robot.state == 23 && IRLine.crosses >= 1){
-      IRLine.crosses = 0;
-      robot.setState(stop);
+    // } else if(robot.state == 23 && IRLine.crosses >= 1){
+    //   IRLine.crosses = 0;
+    //   robot.setState(stop);
     
       
-    } else if(robot.state == leftline && robot.rel_theta > radians(70)){
+    } else if(robot.state == leftline && robot.rel_theta > radians(80)){
       IRLine.crosses = 0;
       robot.setState(fline);
     
       
-    } else if(robot.state == rightline && robot.rel_theta < radians (-70)){
+    } else if(robot.state == rightline && robot.rel_theta < radians (-80)){
       IRLine.crosses = 0;
       robot.setState(fline);
     
@@ -193,7 +193,7 @@ void control(robot_t& robot)
        
 
      } else if (robot.state == 13) {  //turn 180
-       robot.setRobotVW(0, 1.5);
+       robot.setRobotVW(0, -1.5);
        
 
      } else if (robot.state == 14) {  //follow until find cross
