@@ -51,7 +51,7 @@ void control(robot_t& robot)
       robot.setState(11); 
       
       
-    } else if(robot.state == 11 && robot.tis > 1650){
+    } else if(robot.state == 11 && robot.tis > 1500){
       robot.rel_s = 0;
       robot.setState(12); 
       
