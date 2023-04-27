@@ -60,7 +60,7 @@ std::vector<std::string> Scheduler::getRoute(Box box) {
     dijkstra.findPath(graph, currentPosition, destPort.pos);
         
     auto path = dijkstra.getPathArray();
-    currentPosition = path[dijkstra.getPathSize() - 2];
+    currentPosition = path[dijkstra.getPathSize() - 1];
     // Serial.printf("Minimun Path is: [ ");
     // int a= dijkstra.getPathSize();
     // for(int i = 0; i < a; i++){

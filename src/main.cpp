@@ -160,7 +160,7 @@ schedule_t schedule;
 
 void setMotorPWM(Adafruit_DCMotor* M, int new_PWM, int enable = 1)
 {
-  int PWM_max = 180; // Was 255
+  int PWM_max = 250; // Was 250
   if (new_PWM >  PWM_max) new_PWM =  PWM_max;
   if (new_PWM < -PWM_max) new_PWM = -PWM_max;
   //PWM_act = new_PWM;
@@ -187,7 +187,7 @@ void setMotorsPWM(int PWM1, int PWM2)
 
 void setSolenoidPWM(int new_PWM)
 {
-  int PWM_max = 250;
+  int PWM_max = 180; //was 250
   if (new_PWM >  PWM_max) new_PWM =  PWM_max;
   if (new_PWM < -PWM_max) new_PWM = -PWM_max;
 
@@ -471,14 +471,14 @@ void setup()
   tof.startContinuous(0); 
 
   // Robot Parameters
-  robot.b = 0.137 / 2;
-  robot.r1 = 0.07 / 2;
-  robot.r2 = 0.07 / 2;
+  robot.b = 0.125 / 2;   //was 0.137
+  robot.r1 = 0.0725 / 2; //may have to adjust
+  robot.r2 = 0.0725 / 2;
 
   robot.dv_max = 5 * robot.dt;  // Linear velocity change per control period
   robot.dw_max = 10 * robot.dt; // Angular velocity change per control period
 
-  robot.state = 0;
+  robot.state = 8;
   // robot.solenoid_state = 1;
 
   // Testing the the Scheduler
@@ -541,7 +541,7 @@ void readEncoders(void)
 // Green  IR4 IO36 (Uno A4)
 // White  IR5 IO39 (Uno A5)
 
-int analog_pins[5] = {15, 4, 34, 36, 39};
+int analog_pins[5] = {15, 32, 34, 36, 39};    //IR2 era 34
 
 
 void readIRSensors(void)
@@ -743,7 +743,7 @@ void real_loop(void)
     if (b == '?') {robot.v = 0; robot.w = 0;}
     if (b == 'z') robot.state = 0;
     if (b == 'i') robot.state = 101;
-    if (b == '*') robot.state = 100;
+    if (b == '*') {robot.state = 100; instructionCounter = 0;}
     if (b == 'f') robot.state = 1;
     if (b == 'l') robot.state = 2;
     if (b == 'r') robot.state = 3;
@@ -797,9 +797,9 @@ void real_loop(void)
 
     IPAddress ip = WiFi.localIP();
 
-    serial_channels.send('i', ip[0], ip[1], ip [2], ip[3]);
+    // serial_channels.send('i', ip[0], ip[1], ip [2], ip[3]);
     
-    if(udp_on) send_udp_channels();
+    // if(udp_on) send_udp_channels();
     
     //Serial.print(F(" "));
     //Serial.print(ip.toString());
@@ -819,10 +819,11 @@ void real_loop(void)
     // Serial.print(F(" E2: "));
     // serial_print_format(robot.enc2, 4);
 
+    // Serial.printf("                                                                                                            ");
     byte c;
-    for (c = 0; c < 5; c++) {
+    for (c = 5; c >= 1; c--) {
        Serial.print(" ");
-       Serial.print(IRLine.IR_values[c]);
+       Serial.print(IRLine.IR_values[c-1]);
     }
 
     //Serial.print(F(" T: "));
@@ -840,7 +841,7 @@ void real_loop(void)
     Serial.print(F(" Comando: "));
     serial_print_format(instructionCounter, 4);
 
-    if(robot.state == 101) {
+    if(robot.state == 0) {
 
       if (instructionCounter == instructions.size()) {
         if (currentBox.status == HOLDING) {

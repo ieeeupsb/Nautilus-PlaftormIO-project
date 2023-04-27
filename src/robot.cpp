@@ -35,14 +35,14 @@ extern IRLine_t IRLine;
 robot_t::robot_t()
 {
   pulses_to_meters = 0.0000532;
-  wheel_dist = 0.14;
+  wheel_dist = 0.125; // was 0.14
   dv_max = 5;
   dw_max = 10;
 
   follow_v = 0.1;
   follow_k = -0.05;
-  states_v = 0.1;
-  states_w = 1.5;
+  states_v = 0.12;
+  states_w = 2;
 
 }
 
@@ -110,28 +110,65 @@ void robot_t::followLineLeft(IRLine_t& IRLine, float Vnom, float K)
 // }
 
 void robot_t::followLine(IRLine_t& IRLine){
+      float error = (IRLine.IR_values[0] * -2) + (IRLine.IR_values[1] * -1) + (IRLine.IR_values[2] * 0) + (IRLine.IR_values[3] * 1) + (IRLine.IR_values[4] * 2);
+      float werror = (error/1800);
 
-      if (IRLine.IR_values[2] > 500){
-        v_req = 0.1;
-        w_req = 0;
-       }
-      if (IRLine.IR_values[3] > 500){
-        v_req = 0.1;
-        w_req = 1;
-       }
-      if (IRLine.IR_values[4] > 500){
-        v_req = 0.05;
-        w_req = 1.5;
-       }
-      if (IRLine.IR_values[0] > 500){
-        v_req = 0.05;
-        w_req = -1.5;
-      }
+      v_req = states_v;
+      w_req = werror;
+      // Serial.println();
+      // Serial.println();
+      // Serial.println();
+      // Serial.printf("error: ");
+      // Serial.println(error);
+      // Serial.printf("werror: ");
+      // Serial.println(werror);
+      // Serial.println();
+      // Serial.println();
 
-      if (IRLine.IR_values[1] > 500){
-        v_req = 0.1;
-        w_req = -1;
-       }
+
+      // //   Enxerga tudo a preto
+      // if (IRLine.IR_values[4] > 500 && IRLine.IR_values[3] > 500 && IRLine.IR_values[2] > 500 && IRLine.IR_values[1] > 500 && IRLine.IR_values[0] > 500){
+      //   v_req = 0.1;
+      //   w_req = 0;
+      // }
+      
+      // //  Enxerga apenas as extremidades da esquerda a preto, corrigir um pouco a direita
+      // else if (IRLine.IR_values[4] > 500 && IRLine.IR_values[3] > 500 && (IRLine.IR_values[2] < 500 || IRLine.IR_values[2] > 500)){
+      //   v_req = 0.1;
+      //   w_req = 1;
+      //  }
+
+      // //  Enxerga apenas a extremidade da esquerda a preto, corrigir bastante a direita
+      // else if (IRLine.IR_values[4] > 500){
+      //   v_req = 0.12;
+      //   w_req = 1.5;
+      //  }
+
+      // //  Enxerga apenas as extremidades da direita a preto, corrigir um pouco a esquerda
+      // else if ((IRLine.IR_values[2] < 500 || IRLine.IR_values[2] > 500) && IRLine.IR_values[1] > 500 && IRLine.IR_values[0] > 500){
+      //   v_req = 0.05;
+      //   w_req = -1;
+      //  }
+
+      // //  Enxerga apenas a extremidade da direita a preto, corrigir bastante a esquerda
+      // else if (IRLine.IR_values[0] > 500){
+      //   v_req = 0.05;
+      //   w_req = -1.5;
+      //  }
+
+      // else if (IRLine.IR_values[2] > 500 && IRLine.IR_values[1] > 500){
+      //   v_req = 0.1;
+      //   w_req = -0.5;
+      //  }
+       
+      // else if (IRLine.IR_values[3] > 500 && IRLine.IR_values[2] > 500){
+      //   v_req = 0.1;
+      //   w_req = 0.5;
+      //  }
+      //  else {
+      //   v_req = 0.1;
+      //   w_req = 0;
+      //  }
 }
 
 void robot_t::accelerationLimit(void)

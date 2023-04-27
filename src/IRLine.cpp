@@ -34,7 +34,7 @@ IRLine_t::IRLine_t()
   IR_WaterLevel = 100;
   IR_tresh = 512;
   cross_tresh = 3;
-  black_cross_level = 2.5;
+  black_cross_level = 2.2;
 }
 
 void IRLine_t::calibrate(void)
@@ -103,6 +103,7 @@ void IRLine_t::calcCrosses(void)
   
   if (IR_max == 0) {
     cross_count = 0;
+    last_cross_count = 0;
     return;
   }
   
@@ -111,6 +112,7 @@ void IRLine_t::calcCrosses(void)
   blacks = total / IR_max;
   if (blacks > black_cross_level) {
     cross_count++;  
+    if (cross_count > 32) cross_count = 32;
     if (last_cross_count < cross_tresh && cross_count >= cross_tresh) {
       crosses++;  
     }

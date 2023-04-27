@@ -12,7 +12,6 @@ void control(robot_t& robot)
     //robot.setState(4);
 
     typedef enum{
-     // start,   // 0
       stop,     // 0
       fline,    // 1
       tleft,    // 2
@@ -20,7 +19,8 @@ void control(robot_t& robot)
       pickb,    // 4
       dropb,    // 5
       leftline, // 6
-      rightline // 7
+      rightline,// 7
+      start     // 8
     }estados; 
 
     // Rules for the state evolution
@@ -33,17 +33,18 @@ void control(robot_t& robot)
       //robot.setState(fline);
       
     } else if(robot.state == fline && IRLine.crosses >= 1){
-      //IRLine.crosses = 0;
+      IRLine.crosses = 0;
+      robot.rel_theta = 0;
       robot.setState(stop);
       
     } else if(robot.state == tleft && robot.rel_theta > radians (80)){
+      IRLine.crosses = 0;
       robot.setState(stop);
-      //IRLine.crosses = 0;
 
       
     } else if(robot.state == tright && robot.rel_theta < radians (-80)){
+      IRLine.crosses = 0;
       robot.setState(stop);  
-      //IRLine.crosses = 0;
       
       
     } else if(robot.state == pickb && robot.tof_dist < 0.04){ 
@@ -55,49 +56,58 @@ void control(robot_t& robot)
       robot.setState(12); 
       
       
-    } else if(robot.state == 12 && robot.rel_s < -0.12){
+    } else if(robot.state == 12 && robot.rel_s < -0.08){
       robot.rel_theta = 0;
       robot.setState(13); 
       
       
     } else if(robot.state == 13 && robot.rel_theta > radians(170)){
-      //IRLine.crosses = 0;
+      IRLine.crosses = 0;
       robot.setState(stop); 
 
       
-    } else if(robot.state == 14 && IRLine.crosses >= 1){
+    // } else if(robot.state == 14 && IRLine.crosses >= 1){
+    //   robot.rel_s = 0;
+    //   robot.rel_theta = 0;
+    //   robot.setState(stop); 
+
+      
+    } else if(robot.state == dropb && robot.tis >= 2000){
       robot.rel_s = 0;
       robot.rel_theta = 0;
-      robot.setState(stop); 
-
-      
-    } else if(robot.state == dropb && robot.tis >= 1500){
-      robot.rel_s = 0;
+      //robot.setState(22);
       robot.setState(21);
 
       
-    } else if(robot.state == 21 && robot.rel_s <= -0.1){
-      robot.rel_theta = 0;
-      robot.setState(22);
+    } else if(robot.state == 21 && robot.rel_s <= -0.03){
+    robot.rel_theta = 0;
+    robot.setState(22);
 
       
-    } else if(robot.state == 22 && robot.rel_theta > radians(170)){
+    } else if(robot.state == 22 && robot.rel_theta < radians(-170)){
       IRLine.crosses = 0;
       robot.setState(23);
 
       
     } else if(robot.state == 23 && IRLine.crosses >= 1){
+      IRLine.crosses = 0;
       robot.setState(stop);
     
       
-    } else if(robot.state == leftline && robot.rel_theta > radians(80)){
+    } else if(robot.state == leftline && robot.rel_theta > radians(70)){
+      IRLine.crosses = 0;
       robot.setState(fline);
     
       
-    } else if(robot.state == rightline && robot.rel_theta < radians (-80)){
+    } else if(robot.state == rightline && robot.rel_theta < radians (-70)){
+      IRLine.crosses = 0;
       robot.setState(fline);
     
-      
+ 
+    } else if(robot.state == start && robot.tof_dist > 0.10 && robot.prev_tof_dist < 0.05 && robot.tis > 3000){
+      robot.setState(stop);
+    
+ 
     }
     //  if(robot.state == 0 && robot.tof_dist > 0.10 && robot.prev_tof_dist < 0.05 && robot.tis > 3000) {
     //   robot.rel_s = 0;
@@ -153,6 +163,8 @@ void control(robot_t& robot)
       robot.setRobotVW(0,0);
 
      } else */if (robot.state == stop){
+      robot.rel_theta = 0;
+      IRLine.crosses = 0;
       robot.setRobotVW(0,0);
 
      } else if (robot.state == fline) {                    
@@ -160,11 +172,11 @@ void control(robot_t& robot)
     
      } else if (robot.state == tleft) {  
        //robot.rel_theta = 0;
-       robot.setRobotVW(0.02, 1.5);
+       robot.setRobotVW(0.03, 1.5);
        
 
      } else if (robot.state == tright) {  
-       robot.setRobotVW(0.02, -1.5);
+       robot.setRobotVW(0.03, -1.5);
        
 
      } else if (robot.state == pickb) {  //follow until find box
@@ -177,11 +189,11 @@ void control(robot_t& robot)
        
 
      } else if (robot.state == 12) {  //go back a little
-       robot.setRobotVW(-0.1, 0);
+       robot.setRobotVW(-0.12, 0);
        
 
      } else if (robot.state == 13) {  //turn 180
-       robot.setRobotVW(0, 2);
+       robot.setRobotVW(0, 1.5);
        
 
      } else if (robot.state == 14) {  //follow until find cross
@@ -189,16 +201,16 @@ void control(robot_t& robot)
        
 
      } else if (robot.state == dropb) {  
+      //  robot.followLineRight(IRLine, robot.follow_v, robot.follow_k);
        robot.followLine(IRLine);
-       
 
      } else if (robot.state == 21) {  
        robot.solenoid_state = 0;
-       robot.setRobotVW(-0.1, 0);
+       robot.setRobotVW(-0.12, 0);
        
 
      } else if (robot.state == 22) {  
-       robot.setRobotVW(0, 2);
+       robot.setRobotVW(0, -1.5);
        
 
      } else if (robot.state == 23) {  
@@ -214,9 +226,16 @@ void control(robot_t& robot)
        
 
      }
+
+    if (robot.state == start) {         // Robot Stoped            
+      robot.solenoid_state = 0;
+      robot.setRobotVW(0, 0);
+    }
+
     // if (robot.state == 0) {         // Robot Stoped            
     //   robot.solenoid_state = 0;
     //   robot.setRobotVW(0, 0);
+    // }
     
     // } else if (robot.state == 1) {  // Go: Get first box
     //   robot.solenoid_state = 0;
