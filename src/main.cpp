@@ -332,6 +332,7 @@ std::vector<std::string> instructions;
 int instructionCounter = 0;
 Box currentBox;
 Port currentPort;
+Box boxes[4]; 
 
 void setup()
 {
@@ -483,58 +484,7 @@ void setup()
   robot.state = 8;
   // robot.solenoid_state = 1;
 
-  // Testing the the Scheduler
 
-  // Box boxes[4]; 
-  // for (size_t i = 0; i < 4; i++)
-  // {
-  //   Box box;
-  //   box.pos = i;
-  //   box.num = i;
-  //   box.color = BLUE;
-  //   box.status = WAINTING;
-    
-  //   boxes[i] = box;
-
-  // }
-  
-  
-  Box boxes[4]; 
-  for (size_t i = 0; i < 4; i++)
-  {
-    Box box;
-    box.pos = i;
-    box.num = i;
-    box.status = WAINTING;
-    if(irrecvbuffer[i] == 'w')
-      box.color = RED;
-
-    else if(irrecvbuffer[i] == 'u')
-      box.color = GREEN;
-    
-    else if(irrecvbuffer[i] == 'o')
-      box.color = BLUE;
-    
-    boxes[i] = box;
-    
-    Serial.printf("No da caixa : ");
-    Serial.print(boxes[i].pos);
-    Serial.printf("   ");
-    Serial.printf("Status da caixa : ");
-    Serial.print(boxes[i].status);
-    Serial.printf("   ");
-    Serial.printf("Cor da caixa : ");
-    Serial.println(boxes[i].color);
-  }
-
-  scheduler.setUp(boxes, 4);
-  currentBox = scheduler.getBox();
-  currentPort = scheduler.getAvailablePort();
-  instructions = scheduler.getRoute();
-  Serial.println("Aqui");
-  for(auto inst: instructions) {
-    Serial.println(inst.c_str());
-  }
 
 
   Serial2.begin(2400, SERIAL_8N1, RXD2);
@@ -810,13 +760,13 @@ void real_loop(void)
     if (tof.readRangeAvailable()) {
       robot.prev_tof_dist = robot.tof_dist;
       robot.tof_dist = (tof.readRangeMillimeters() * 1e-3) -0.02;
-    }  
+    }
 
     robot.odometry();
     control(robot);
     /* robot.v_req = 0.1;
     robot.w_req = 0.0;
- */
+    */
     setSolenoidState();
 
     robot.accelerationLimit();
@@ -840,8 +790,8 @@ void real_loop(void)
     //Serial.print(F(" "));
     //Serial.print(ip.toString());
   
-    // // // Serial.print(F(" St: "));
-    // // // serial_print_format(robot.state, 4);
+    Serial.print(F(" St: "));
+    serial_print_format(robot.state, 4);
 
     // // // Serial.print(F(" Iman: "));
     // // // serial_print_format(robot.solenoid_state, 4);
@@ -859,29 +809,29 @@ void real_loop(void)
     // // // // serial_print_format(robot.enc2, 4);
 
     // Serial.printf("                                                                                                            ");
-    // byte c;
-    // for (c = 5; c >= 1; c--) {
-    //    Serial.print(" ");
-    //    Serial.print(IRLine.IR_values[c-1]);
-    // }
+    byte c;
+    for (c = 5; c >= 1; c--) {
+       Serial.print(" ");
+       Serial.print(IRLine.IR_values[c-1]);
+    }
 
     // // // //Serial.print(F(" T: "));
     // // // //serial_print_format(robot.TouchSwitch, 4);
 
-    // Serial.print(F(" Tof: "));
-    // serial_print_format(robot.tof_dist, 4);
+    Serial.print(F(" Tof: "));
+    serial_print_format(robot.tof_dist, 4);
 
-    // Serial.print(F(" Black_level: "));
-    // serial_print_format(IRLine.blacks, 4);
+    Serial.print(F(" Black_level: "));
+    serial_print_format(IRLine.blacks, 4);
 
-    // Serial.print(F(" Crosses: "));
-    // serial_print_format(IRLine.crosses, 4);
+    Serial.print(F(" Crosses: "));
+    serial_print_format(IRLine.crosses, 4);
     
-    // Serial.print(F(" Comando: "));
-    // serial_print_format(instructionCounter, 4);
+    Serial.print(F(" Comando: "));
+    serial_print_format(instructionCounter, 4);
 
 
-    if(robot.state == 0) {
+    if(robot.state == STOP) {
 
       if (instructionCounter == instructions.size()) {
         if (currentBox.status == HOLDING) {
@@ -894,35 +844,38 @@ void real_loop(void)
       }
       
       if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] != "Drop" || instructions[instructionCounter+1] != "Pick"))
-        robot.state = 1;
+        robot.state = FLINE;
       else if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] == "Drop" || instructions[instructionCounter+1] == "Pick"))
-        robot.state = 0;
+        robot.state = STOP;
       else if (instructions[instructionCounter] == "Left" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop"))
-        robot.state = 2;
+        robot.state = TLEFT;
+      else if (instructions[instructionCounter] == "Left" && (instructions[instructionCounter+1] != "Pick" || instructions[instructionCounter+1] != "Drop") && (instructions[instructionCounter+2] != "Pick" || instructions[instructionCounter+2] != "Drop"))
+        robot.state = FOLEFTFO;
       else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop"))
-        robot.state = 3;
+        robot.state = TRIGHT;
+      else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] != "Pick" || instructions[instructionCounter+1] != "Drop") && (instructions[instructionCounter+2] != "Pick" || instructions[instructionCounter+2] != "Drop"))
+        robot.state = FORIGHTFO;
       else if (instructions[instructionCounter] == "Pick") {
-        robot.state = 4;
+        robot.state = PICKB;
         // Assuming that after this state the box is picked
         currentBox.status = HOLDING;
       }
       else if (instructions[instructionCounter] == "Drop") {
-        robot.state = 5;
+        robot.state = DROPB;
         // Assuming that the box will be delivered after this state
         currentBox.status = DELIVERED;
         currentBox = scheduler.getBox();
         currentPort = scheduler.getAvailablePort();
         currentPort.occupied = true;
       }else if (instructions[instructionCounter] == "Left")
-        robot.state = 6;
+        robot.state = LEFTLINE;
 
       else if (instructions[instructionCounter] == "Right")
-        robot.state = 7;
+        robot.state = RIGHTLINE;
 
       instructionCounter++;
     }
     
-
     /*
     Serial.print(F(" V: "));
     serial_print_format(robot.v, 4);
@@ -935,33 +888,79 @@ void real_loop(void)
     serial_print_format(robot.we, 4);    
     */
 
+
     Serial.println();
   }
 
-  if (Serial2.available()) {
-      irrecvdata = Serial2.read();  
 
-      if(irrecvdata == 'U') {
-        Serial.print("!");
-      } else if(irrecvdata == 'W') {
-        irrecvbuffer_index = 0;
-      } else if(irrecvbuffer_index >= 0) {
-        irrecvbuffer[irrecvbuffer_index] = irrecvdata;
-        irrecvbuffer_index++;
-        if(irrecvbuffer_index >= 4) {
-          irrecvbuffer[irrecvbuffer_index] = '\0';
-          irrecvbuffer_index = -1;
-          Serial.println("Received Instruction!");
-          Serial.println(irrecvbuffer);
+    // if Start, wait for IR message
+      if(robot.state == START){
+        if (Serial2.available()) {
+            irrecvdata = Serial2.read();  
+            if(irrecvdata == 'U') {
+              Serial.print("!");
+            } else if(irrecvdata == 'W') {
+              irrecvbuffer_index = 0;
+            } else if(irrecvbuffer_index >= 0) {
+              irrecvbuffer[irrecvbuffer_index] = irrecvdata;
+              if(irrecvbuffer[irrecvbuffer_index] == 'w' || irrecvbuffer[irrecvbuffer_index] == 'o' || irrecvbuffer[irrecvbuffer_index] == 'u'){
+                irrecvbuffer_index++;
+                if(irrecvbuffer_index >= 4) {
+                  irrecvbuffer[irrecvbuffer_index] = '\0';
+                  irrecvbuffer_index = -1;
+                  Serial.println("Received Instruction!");
+                  Serial.println(irrecvbuffer);
+                  robot.state = SETUP;
+                }
+              } else {
+                Serial.write(irrecvdata);
+                Serial.println();
+              }
+          }
         }
-      } else {
-        Serial.write(irrecvdata);
-        Serial.println();
       }
 
-  }
-}
+      // if Setup, create boxes and start the setup for the Dijkstra
+      if(robot.state == SETUP) {
+        for (size_t i = 0; i < 4; i++) {
+          Box box;
+          box.pos = i;
+          box.num = i;
+          box.status = WAINTING;
+          if(irrecvbuffer[i] == 'w')
+            box.color = RED;
 
+          else if(irrecvbuffer[i] == 'u')
+            box.color = GREEN;
+          
+          else if(irrecvbuffer[i] == 'o')
+            box.color = BLUE;
+          
+          boxes[i] = box;
+          
+          Serial.printf("No da caixa : ");
+          Serial.print(boxes[i].pos);
+          Serial.printf("   ");
+          Serial.printf("Status da caixa : ");
+          Serial.print(boxes[i].status);
+          Serial.printf("   ");
+          Serial.printf("Cor da caixa : ");
+          Serial.println(boxes[i].color);
+        }
+
+        scheduler.setUp(boxes, 4);
+        currentBox = scheduler.getBox();
+        currentPort = scheduler.getAvailablePort();
+        instructions = scheduler.getRoute();
+        Serial.println("Aqui");
+        for(auto inst: instructions) {
+          Serial.println(inst.c_str());
+        }
+
+        robot.state = STOP;
+      }
+  
+  }
 
 void sim_loop(void)
 {

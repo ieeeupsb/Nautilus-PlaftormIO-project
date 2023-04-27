@@ -5,49 +5,39 @@
 
 extern IRLine_t IRLine;
 
+
 void control(robot_t& robot)
 {
     robot.tis = millis() - robot.tes;
 
     //robot.setState(4);
 
-    typedef enum{
-      stop,     // 0
-      fline,    // 1
-      tleft,    // 2
-      tright,   // 3
-      pickb,    // 4
-      dropb,    // 5
-      leftline, // 6
-      rightline,// 7
-      start     // 8
-    }estados; 
 
     // Rules for the state evolution
-    /*if(robot.state == start && robot.tof_dist > 0.10 && robot.prev_tof_dist < 0.05 && robot.tis > 3000){
+    /*if(robot.state == START && robot.tof_dist > 0.10 && robot.prev_tof_dist < 0.05 && robot.tis > 3000){
       robot.rel_s = 0;
-      //robot.setState(start);
-    }*/if(robot.state == stop){
+      //robot.setState(START);
+    }*/if(robot.state == STOP){
       IRLine.crosses = 0;
       robot.rel_theta = 0;
-      //robot.setState(fline);
+      //robot.setState(FLINE);
       
-    } else if(robot.state == fline && IRLine.crosses >= 1){
+    } else if(robot.state == FLINE && IRLine.crosses >= 1){
       IRLine.crosses = 0;
       robot.rel_theta = 0;
-      robot.setState(stop);
+      robot.setState(STOP);
       
-    } else if(robot.state == tleft && robot.rel_theta > radians (80)){
+    } else if(robot.state == TLEFT && robot.rel_theta > radians (80)){
       IRLine.crosses = 0;
-      robot.setState(stop);
+      robot.setState(STOP);
 
       
-    } else if(robot.state == tright && robot.rel_theta < radians (-80)){
+    } else if(robot.state == TRIGHT && robot.rel_theta < radians (-80)){
       IRLine.crosses = 0;
-      robot.setState(stop);  
+      robot.setState(STOP);  
       
       
-    } else if(robot.state == pickb && robot.tof_dist < 0.04){ 
+    } else if(robot.state == PICKB && robot.tof_dist < 0.04){ 
       robot.setState(11); 
       
       
@@ -62,16 +52,16 @@ void control(robot_t& robot)
       
     } else if(robot.state == 13 && robot.rel_theta < radians(-170)){
       IRLine.crosses = 0;
-      robot.setState(stop); 
+      robot.setState(STOP); 
 
       
     // } else if(robot.state == 14 && IRLine.crosses >= 1){
     //   robot.rel_s = 0;
     //   robot.rel_theta = 0;
-    //   robot.setState(stop); 
+    //   robot.setState(STOP); 
 
       
-    } else if(robot.state == dropb && robot.tis >= 2000){
+    } else if(robot.state == DROPB && robot.tis >= 2000){
       robot.rel_s = 0;
       robot.rel_theta = 0;
       //robot.setState(22);
@@ -85,29 +75,36 @@ void control(robot_t& robot)
       
     } else if(robot.state == 22 && robot.rel_theta < radians(-180)){
       IRLine.crosses = 0;
-      robot.setState(stop);
+      robot.setState(STOP);
 
       
     // } else if(robot.state == 23 && IRLine.crosses >= 1){
     //   IRLine.crosses = 0;
-    //   robot.setState(stop);
+    //   robot.setState(STOP);
     
       
-    } else if(robot.state == leftline && robot.rel_theta > radians(75)){
+    } else if(robot.state == LEFTLINE && robot.rel_theta > radians(75)){
       IRLine.crosses = 0;
-      robot.setState(fline);
+      robot.setState(FLINE);
     
       
-    } else if(robot.state == rightline && robot.rel_theta < radians (-75)){
+    } else if(robot.state == RIGHTLINE && robot.rel_theta < radians (-75)){
       IRLine.crosses = 0;
-      robot.setState(fline);
+      robot.setState(FLINE);
     
  
-    } else if(robot.state == start && robot.tof_dist > 0.10 && robot.prev_tof_dist < 0.05 && robot.tis > 3000){
-      robot.setState(stop);
+    } else if((robot.state == START && robot.tof_dist > 0.10 && robot.prev_tof_dist < 0.05 && robot.tis > 3000)){
+      robot.setState(STOP);
+
+    } else if((robot.state == FOLEFTFO && robot.tof_dist > 0.10 && robot.prev_tof_dist < 0.05 && robot.tis > 3000)){
+      robot.setState(STOP);
+      
+    } else if((robot.state == START && robot.tof_dist > 0.10 && robot.prev_tof_dist < 0.05 && robot.tis > 3000)){
+      robot.setState(STOP);
+      
+    }  
+
     
- 
-    }
     //  if(robot.state == 0 && robot.tof_dist > 0.10 && robot.prev_tof_dist < 0.05 && robot.tis > 3000) {
     //   robot.rel_s = 0;
     //   robot.setState(1);
@@ -158,27 +155,27 @@ void control(robot_t& robot)
     // }
 
     // Actions in each state
-    /*if (robot.state == start){
+    /*if (robot.state == START){
       robot.setRobotVW(0,0);
 
-     } else */if (robot.state == stop){
+     } else */if (robot.state == STOP){
       robot.rel_theta = 0;
       IRLine.crosses = 0;
       robot.setRobotVW(0,0);
 
-     } else if (robot.state == fline) {                    
+     } else if (robot.state == FLINE) {                    
        robot.followLine(IRLine);
     
-     } else if (robot.state == tleft) {  
+     } else if (robot.state == TLEFT) {  
        //robot.rel_theta = 0;
        robot.setRobotVW(0.03, 1.5);
        
 
-     } else if (robot.state == tright) {  
+     } else if (robot.state == TRIGHT) {  
        robot.setRobotVW(0.03, -1.5);
        
 
-     } else if (robot.state == pickb) {  //follow until find box
+     } else if (robot.state == PICKB) {  //follow until find box
        robot.followLine(IRLine);
        
 
@@ -199,7 +196,7 @@ void control(robot_t& robot)
        robot.followLine(IRLine);
        
 
-     } else if (robot.state == dropb) {  
+     } else if (robot.state == DROPB) {  
       //  robot.followLineRight(IRLine, robot.follow_v, robot.follow_k);
        robot.followLine(IRLine);
 
@@ -216,22 +213,23 @@ void control(robot_t& robot)
        robot.followLine(IRLine);   
        
 
-     } else if (robot.state == leftline) {  
+     } else if (robot.state == LEFTLINE) {  
        robot.setRobotVW(0.02, 1.5);  
        
 
-     } else if (robot.state == rightline) {  
+     } else if (robot.state == RIGHTLINE) {  
        robot.setRobotVW(0.02, -1.5);   
        
 
      }
 
-    if (robot.state == start) {         // Robot Stoped            
+    if (robot.state == START) {         // Robot STOPed            
       robot.solenoid_state = 0;
       robot.setRobotVW(0, 0);
+      
     }
 
-    // if (robot.state == 0) {         // Robot Stoped            
+    // if (robot.state == 0) {         // Robot STOPed            
     //   robot.solenoid_state = 0;
     //   robot.setRobotVW(0, 0);
     // }
