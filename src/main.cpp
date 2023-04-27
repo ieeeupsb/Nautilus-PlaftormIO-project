@@ -846,7 +846,7 @@ void real_loop(void)
     Serial.print(F(" Comando: "));
     serial_print_format(instructionCounter, 4);
 
-    if(robot.state == 101) {
+    if(robot.state == 0) {
 
       if (instructionCounter == instructions.size()) {
         if (currentBox.status == HOLDING) {
@@ -858,8 +858,10 @@ void real_loop(void)
         instructionCounter = 0;
       }
       
-      if (instructions[instructionCounter] == "Line")
+      if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] != "Drop" || instructions[instructionCounter+1] != "Pick"))
         robot.state = 1;
+      else if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] == "Drop" || instructions[instructionCounter+1] == "Pick"))
+        robot.state = 0;
       else if (instructions[instructionCounter] == "Left" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop"))
         robot.state = 2;
       else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop"))

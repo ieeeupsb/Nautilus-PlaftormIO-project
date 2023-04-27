@@ -51,7 +51,7 @@ void control(robot_t& robot)
       robot.setState(11); 
       
       
-    } else if(robot.state == 11 && robot.tis > 1500){
+    } else if(robot.state == 11 && robot.tis > 1650){
       robot.rel_s = 0;
       robot.setState(12); 
       
@@ -84,7 +84,7 @@ void control(robot_t& robot)
     robot.setState(22);
 
       
-    } else if(robot.state == 22 && robot.rel_theta < radians(-170)){
+    } else if(robot.state == 22 && robot.rel_theta < radians(-180)){
       IRLine.crosses = 0;
       robot.setState(stop);
 
@@ -94,12 +94,12 @@ void control(robot_t& robot)
     //   robot.setState(stop);
     
       
-    } else if(robot.state == leftline && robot.rel_theta > radians(80)){
+    } else if(robot.state == leftline && robot.rel_theta > radians(75)){
       IRLine.crosses = 0;
       robot.setState(fline);
     
       
-    } else if(robot.state == rightline && robot.rel_theta < radians (-80)){
+    } else if(robot.state == rightline && robot.rel_theta < radians (-75)){
       IRLine.crosses = 0;
       robot.setState(fline);
     
