@@ -33,6 +33,19 @@
 
 #define IRSENSORS_COUNT 5
 
+typedef enum{
+  STOP,     // 0
+  FLINE,    // 1
+  TLEFT,    // 2
+  TRIGHT,   // 3
+  PICKB,    // 4
+  DROPB,    // 5
+  LEFTLINE, // 6
+  RIGHTLINE,// 7
+  START,    // 8
+  SETUP,    // 9
+}estados; 
+
 class IRLine_t
 {
   public:

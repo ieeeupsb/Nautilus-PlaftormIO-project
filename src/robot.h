@@ -47,6 +47,7 @@ class robot_t {
   float ds, dtheta;
   float rel_s, rel_theta;
   float x, y, theta;
+  bool flag;
   
   byte state;
   uint32_t tis, tes;

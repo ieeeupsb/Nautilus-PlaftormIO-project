@@ -118,7 +118,7 @@ void setSolenoidPWM(int new_PWM);
 
 void setSolenoidState()
 {
-  if (robot.solenoid_state) setSolenoidPWM(250);
+  if (robot.solenoid_state) setSolenoidPWM(230);
   else setSolenoidPWM(0);
 }
 
@@ -187,7 +187,7 @@ void setMotorsPWM(int PWM1, int PWM2)
 
 void setSolenoidPWM(int new_PWM)
 {
-  int PWM_max = 180; //was 250
+  int PWM_max = 250; //was 250
   if (new_PWM >  PWM_max) new_PWM =  PWM_max;
   if (new_PWM < -PWM_max) new_PWM = -PWM_max;
 
@@ -745,12 +745,13 @@ void real_loop(void)
     if (b == '?') {robot.v = 0; robot.w = 0;}
     if (b == 'z') robot.state = 0;
     if (b == 'i') robot.state = 101;
-    if (b == '*') {robot.state = 100; instructionCounter = 0;}
+    if (b == 'k') {robot.state = 100; instructionCounter = 0;}
     if (b == 'f') robot.state = 1;
     if (b == 'l') robot.state = 2;
     if (b == 'r') robot.state = 3;
     if (b == 'p') robot.state = 4;
     if (b == 'd') robot.state = 5;
+    if (b == 's') robot.state = 8;
     serial_channels.StateMachine(b);
   }
 
@@ -812,6 +813,9 @@ void real_loop(void)
     Serial.print(F(" Iman: "));
     serial_print_format(robot.solenoid_state, 4);
 
+    // Serial.print(F(" dt: "));
+    // serial_print_format(robot.dt, 4);
+
     Serial.print(F(" Rel_Theta: "));
     serial_print_format(robot.rel_theta, 4);
 
@@ -846,6 +850,8 @@ void real_loop(void)
     Serial.print(F(" Comando: "));
     serial_print_format(instructionCounter, 4);
 
+    //pedro
+
     if(robot.state == 0) {
 
       if (instructionCounter == instructions.size()) {
@@ -859,32 +865,33 @@ void real_loop(void)
       }
       
       if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] != "Drop" || instructions[instructionCounter+1] != "Pick"))
-        robot.state = 1;
+        robot.state = FLINE;
       else if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] == "Drop" || instructions[instructionCounter+1] == "Pick"))
-        robot.state = 0;
+        robot.state = STOP;
       else if (instructions[instructionCounter] == "Left" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop"))
-        robot.state = 2;
+        robot.state = TLEFT;
       else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop"))
-        robot.state = 3;
+        robot.state = TRIGHT;
       else if (instructions[instructionCounter] == "Pick") {
-        robot.state = 4;
+        robot.state = PICKB;
         // Assuming that after this state the box is picked
         currentBox.status = HOLDING;
       }
       else if (instructions[instructionCounter] == "Drop") {
-        robot.state = 5;
+        robot.state = DROPB;
         // Assuming that the box will be delivered after this state
         currentBox.status = DELIVERED;
         currentBox = scheduler.getBox();
         currentPort = scheduler.getAvailablePort();
         currentPort.occupied = true;
       }else if (instructions[instructionCounter] == "Left")
-        robot.state = 6;
+        robot.state = LEFTLINE;
 
       else if (instructions[instructionCounter] == "Right")
-        robot.state = 7;
+        robot.state = RIGHTLINE;
 
       instructionCounter++;
+    
     }
     
 
