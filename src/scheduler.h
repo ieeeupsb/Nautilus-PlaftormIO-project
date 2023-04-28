@@ -12,18 +12,20 @@ class Scheduler
 {
 private:
     Direction dir;
-    std::priority_queue<Box, std::vector<Box>, boxComparision> queue;
     std::vector<Port> deliveryPorts;
+    std::vector<Port> deliveryNodesB;
+    std::vector<Port> deliveryNodesA;
     int currentPosition;
     Node *nodeVec;
 public:
     Scheduler(int startPosition);
     ~Scheduler();
     void setUp(Box *boxes, unsigned int numBoxes);
+    std::priority_queue<Box, std::vector<Box>, boxComparision> queue;
     std::vector<std::string> getRoute(Box box, Port port);
     std::vector<std::string> getRoute();
     Box getBox();
-    Port getAvailablePort();
+    Port getAvailablePort(Box currentBox);
     Node* getNodeVec();
 };
 
@@ -41,6 +43,20 @@ void Scheduler::setUp(Box *boxes, unsigned int numBoxes) {
         port.pos = deliveryNode;
         port.occupied = false;
         deliveryPorts.push_back(port);        
+    }
+
+    for (auto deliveryNodeA : processNodesA) {
+        Port port1;
+        port1.pos = deliveryNodeA;
+        port1.occupied = false;
+        deliveryNodesA.push_back(port1);        
+    }
+    
+    for (auto deliveryNodeB : processNodesB) {
+        Port port2;
+        port2.pos = deliveryNodeB;
+        port2.occupied = false;
+        deliveryNodesB.push_back(port2);        
     }
 
 
@@ -66,7 +82,17 @@ std::vector<std::string> Scheduler::getRoute(Box box, Port destPort) {
             if (deliveryPorts[i].pos == destPort.pos)
                 deliveryPorts[i].occupied = destPort.occupied; 
         }
-        destPort = getAvailablePort();
+        
+        for(int i = 0; i<deliveryNodesA.size(); i++){
+            if (deliveryNodesA[i].pos == destPort.pos)
+                deliveryNodesA[i].occupied = destPort.occupied; 
+        }
+        
+        for(int i = 0; i<deliveryNodesB.size(); i++){
+            if (deliveryNodesB[i].pos == destPort.pos)
+                deliveryNodesB[i].occupied = destPort.occupied; 
+        }
+        destPort = getAvailablePort(box);
 
         Serial.println();
         Serial.printf("Porta ");
@@ -131,10 +157,30 @@ Box Scheduler::getBox() {
     return queue.top();
 }
 
-Port Scheduler::getAvailablePort() {
-    for (auto port: deliveryPorts) {
-        if (port.occupied == false)
-            return port;
+// Port Scheduler::getAvailablePort() {
+//     for (auto port: deliveryPorts) {
+//         if (port.occupied == false)
+//             return port;
+//     }
+// }
+
+Port Scheduler::getAvailablePort(Box currentBox) {
+    
+    if(currentBox.color == BLUE){
+        for (Port port: deliveryPorts) {
+            if (port.occupied == false)
+                return port;
+        }
+    } else if(currentBox.color == GREEN){
+        for (Port port1: deliveryNodesB) {
+            if (port1.occupied == false)
+                return port1;
+        }
+    } else if(currentBox.color == RED){
+        for (Port port2: deliveryNodesA) {
+            if (port2.occupied == false)
+                return port2;
+        }
     }
 }
 

@@ -831,7 +831,7 @@ void real_loop(void)
     serial_print_format(instructionCounter, 4);
 
 
-    if(robot.state == STOP) {
+    if(robot.state == 8) {
 
       if (instructionCounter == instructions.size()) {
         if (currentBox.status == HOLDING) {
@@ -860,8 +860,27 @@ void real_loop(void)
         robot.state = DROPB;
         // Assuming that the box will be delivered after this state
         currentBox.status = DELIVERED;
+        if(currentBox.color == GREEN || currentBox.color == RED){
+          // Box newBox;
+          // newBox.num = currentBox.num;
+          // newBox.pos = currentBox.pos++;
+          // if(currentBox.color == GREEN) newBox.color = BLUE;
+          // else if(currentBox.color == RED) newBox.color = GREEN;
+          // newBox.status == WAINTING;
+          // scheduler.queue.pop();
+          // scheduler.queue.push(newBox);
+          currentPort = scheduler.getAvailablePort(currentBox);
+          currentPort.occupied == true;
+
+          //currentBox.num;
+          currentBox.pos++;
+          if(currentBox.color == GREEN) currentBox.color = BLUE;
+          else if(currentBox.color == RED) currentBox.color = GREEN;
+          currentBox.status == WAINTING;
+          
+        }
         currentBox = scheduler.getBox();
-        currentPort = scheduler.getAvailablePort();
+        currentPort = scheduler.getAvailablePort(currentBox);
         currentPort.occupied = true;
       }else if (instructions[instructionCounter] == "Left")
         robot.state = LEFTLINE;
@@ -947,7 +966,7 @@ void real_loop(void)
 
         scheduler.setUp(boxes, 4);
         currentBox = scheduler.getBox();
-        currentPort = scheduler.getAvailablePort();
+        currentPort = scheduler.getAvailablePort(currentBox);
         instructions = scheduler.getRoute();
         // Serial.println("Aqui");
         for(auto inst: instructions) {
