@@ -44,8 +44,8 @@ typedef enum{
   RIGHTLINE,// 7
   START,    // 8
   SETUP,    // 9
-  FOLEFTFO, // 10
-  FORIGHTFO // 11
+  // FOLEFTFO, // 10
+  // FORIGHTFO // 11
 }estados; 
 
 class IRLine_t
