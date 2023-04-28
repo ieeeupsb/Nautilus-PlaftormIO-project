@@ -119,7 +119,7 @@ void setSolenoidPWM(int new_PWM);
 
 void setSolenoidState()
 {
-  if (robot.solenoid_state) setSolenoidPWM(250);
+  if (robot.solenoid_state) setSolenoidPWM(230);
   else setSolenoidPWM(0);
 }
 
@@ -188,7 +188,7 @@ void setMotorsPWM(int PWM1, int PWM2)
 
 void setSolenoidPWM(int new_PWM)
 {
-  int PWM_max = 180; //was 250
+  int PWM_max = 250; //was 250
   if (new_PWM >  PWM_max) new_PWM =  PWM_max;
   if (new_PWM < -PWM_max) new_PWM = -PWM_max;
 
@@ -673,7 +673,7 @@ void loop(void)
 
 
 void serial_print_format(int value, byte space)
-{
+{ 
   byte b, c;
   b = Serial.print(value);
   for (c = 0; c < space - b; c++) {

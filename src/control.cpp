@@ -163,11 +163,11 @@ void control(robot_t& robot)
     
      } else if (robot.state == TLEFT) {  
        //robot.rel_theta = 0;
-       robot.setRobotVW(0.03, 1.5); //w was 2
+       robot.setRobotVW(0.04, 1.5); //w was 2
        
 
      } else if (robot.state == TRIGHT) {  
-       robot.setRobotVW(0.03, -1.5); //w was 2
+       robot.setRobotVW(0.04, -1.5); //w was 2
        
 
      } else if (robot.state == PICKB) {  //follow until find box
@@ -209,11 +209,11 @@ void control(robot_t& robot)
        
 
      } else if (robot.state == LEFTLINE) {  
-       robot.setRobotVW(0.01, 2); //was v = 0.02 and w = 2.5
+       robot.setRobotVW(0.02, 2); //was v = 0.02 and w = 2.5
        
 
      } else if (robot.state == RIGHTLINE) {  
-       robot.setRobotVW(0.01, -2); //was v = 0.01 and w = 2.5
+       robot.setRobotVW(0.02, -2); //was v = 0.01 and w = 2.5
        
 
      }
