@@ -935,21 +935,21 @@ void real_loop(void)
           
           boxes[i] = box;
           
-          Serial.printf("No da caixa : ");
-          Serial.print(boxes[i].pos);
-          Serial.printf("   ");
-          Serial.printf("Status da caixa : ");
-          Serial.print(boxes[i].status);
-          Serial.printf("   ");
-          Serial.printf("Cor da caixa : ");
-          Serial.println(boxes[i].color);
+          // Serial.printf("No da caixa : ");
+          // Serial.print(boxes[i].pos);
+          // Serial.printf("   ");
+          // Serial.printf("Status da caixa : ");
+          // Serial.print(boxes[i].status);
+          // Serial.printf("   ");
+          // Serial.printf("Cor da caixa : ");
+          // Serial.println(boxes[i].color);
         }
 
         scheduler.setUp(boxes, 4);
         currentBox = scheduler.getBox();
         currentPort = scheduler.getAvailablePort();
         instructions = scheduler.getRoute();
-        Serial.println("Aqui");
+        // Serial.println("Aqui");
         for(auto inst: instructions) {
           Serial.println(inst.c_str());
         }
