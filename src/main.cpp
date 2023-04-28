@@ -115,7 +115,7 @@ robot_t robot;
 
 void setSolenoidPWM(int new_PWM);
 
-#define TOUCHSW_pin 17 //(Uno D2)
+//#define TOUCHSW_pin 17 //(Uno D2)
 
 void setSolenoidState()
 {
@@ -123,10 +123,10 @@ void setSolenoidState()
   else setSolenoidPWM(0);
 }
 
-byte readTouchSwitch(void)
-{
-  return !digitalRead(TOUCHSW_pin);
-}
+// byte readTouchSwitch(void)
+// {
+//   return !digitalRead(TOUCHSW_pin);
+// }
 
 void control(robot_t& robot);
 
@@ -342,7 +342,7 @@ void setup()
   pinMode(ENC2_A, INPUT_PULLUP);
   pinMode(ENC2_B, INPUT_PULLUP);
 
-  pinMode(TOUCHSW_pin, INPUT_PULLUP);
+  //pinMode(TOUCHSW_pin, INPUT_PULLUP);
 
   UsingSimulator = 0;
 
@@ -750,8 +750,8 @@ void real_loop(void)
     readIRSensors();
     t = micros() - t;
 
-    robot.LastTouchSwitch = robot.TouchSwitch;
-    robot.TouchSwitch = readTouchSwitch();
+    // robot.LastTouchSwitch = robot.TouchSwitch;
+    // robot.TouchSwitch = readTouchSwitch();
 
     IRLine.calcIRLineEdgeLeft();
     IRLine.calcIRLineEdgeRight();
