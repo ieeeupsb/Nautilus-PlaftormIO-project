@@ -849,12 +849,8 @@ void real_loop(void)
         robot.state = STOP;
       else if (instructions[instructionCounter] == "Left" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop"))
         robot.state = TLEFT;
-      else if (instructions[instructionCounter] == "Left" && (instructions[instructionCounter+1] != "Pick" || instructions[instructionCounter+1] != "Drop") && (instructions[instructionCounter+2] != "Pick" || instructions[instructionCounter+2] != "Drop"))
-        robot.state = FOLEFTFO;
       else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop"))
         robot.state = TRIGHT;
-      else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] != "Pick" || instructions[instructionCounter+1] != "Drop") && (instructions[instructionCounter+2] != "Pick" || instructions[instructionCounter+2] != "Drop"))
-        robot.state = FORIGHTFO;
       else if (instructions[instructionCounter] == "Pick") {
         robot.state = PICKB;
         // Assuming that after this state the box is picked
@@ -874,6 +870,7 @@ void real_loop(void)
         robot.state = RIGHTLINE;
 
       instructionCounter++;
+    
     }
     
     /*
