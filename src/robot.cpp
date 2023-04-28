@@ -110,22 +110,47 @@ void robot_t::followLineLeft(IRLine_t& IRLine, float Vnom, float K)
 // }
 
 void robot_t::followLine(IRLine_t& IRLine){
-      float error = (IRLine.IR_values[0] * -2) + (IRLine.IR_values[1] * -1) + (IRLine.IR_values[2] * 0) + (IRLine.IR_values[3] * 1) + (IRLine.IR_values[4] * 2);
-      float werror = (error/1800);
+      // =============================================================================================================
+      // Codigo do Tishi que funciona mas "engasga"
 
-      v_req = states_v;
-      w_req = werror;
-      // Serial.println();
-      // Serial.println();
-      // Serial.println();
-      // Serial.printf("error: ");
-      // Serial.println(error);
-      // Serial.printf("werror: ");
-      // Serial.println(werror);
-      // Serial.println();
-      // Serial.println();
+      // float error = (IRLine.IR_values[0] * -2) + (IRLine.IR_values[1] * -1) + (IRLine.IR_values[2] * 0) + (IRLine.IR_values[3] * 1) + (IRLine.IR_values[4] * 2);
+      // float werror = (error/1800);
 
+      // v_req = states_v;
+      // w_req = werror;
+      // // Serial.println();
+      // // Serial.println();
+      // // Serial.println();
+      // // Serial.printf("error: ");
+      // // Serial.println(error);
+      // // Serial.printf("werror: ");
+      // // Serial.println(werror);
+      // // Serial.println();
+      // // Serial.println();
 
+      // =============================================================================================================
+      // Codigo do PI que teoricamente funciona
+
+      //somei V de 4 e 0 é 0.05 menor que o resto
+
+       if (IRLine.IR_values[2] > 500){
+        setRobotVW(0.11, 0);
+
+       }else if (IRLine.IR_values[3] > 500){
+        setRobotVW(0.11, 1);
+
+       }else if (IRLine.IR_values[4] > 500 && IRLine.IR_values[3] > 500){
+        setRobotVW(0.06, 1.5);
+
+       } else if (IRLine.IR_values[1] > 500){
+        setRobotVW(0.11, -1);
+
+       }else if (IRLine.IR_values[0] > 500 && IRLine.IR_values[1] > 500){
+        setRobotVW(0.06, -1.5);
+
+      }
+
+      // =============================================================================================================
       // //   Enxerga tudo a preto
       // if (IRLine.IR_values[4] > 500 && IRLine.IR_values[3] > 500 && IRLine.IR_values[2] > 500 && IRLine.IR_values[1] > 500 && IRLine.IR_values[0] > 500){
       //   v_req = 0.1;
