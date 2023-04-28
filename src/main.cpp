@@ -98,7 +98,7 @@ channels_t serial_channels, udp_channels;
 
 IRLine_t IRLine;
 
-#define RXD2 16 // Era IRrecvPIN
+#define RXD2 26 // Era IRrecvPIN
 char irrecvbuffer[5];
 char irrecvdata;
 byte irrecvbuffer_index = -1;

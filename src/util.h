@@ -27,7 +27,7 @@ struct Port {
 class boxComparision {
     public:
         bool operator() (const Box& lhs, const Box& rhs) const {
-            return lhs.color > rhs.color;
+            return lhs.color < rhs.color;
         }
 };
 
