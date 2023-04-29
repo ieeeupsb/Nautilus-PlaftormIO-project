@@ -49,10 +49,6 @@
 #include <vector>
 #include <string>
 
-#include <IRremoteESP8266.h>
-#include <IRrecv.h>
-#include <IRutils.h>
-
 #include <VL53L0X.h>
 VL53L0X tof;
 
@@ -98,7 +94,7 @@ channels_t serial_channels, udp_channels;
 
 IRLine_t IRLine;
 
-#define RXD2 26 // Era IRrecvPIN
+#define RXD2 26
 char irrecvbuffer[5];
 char irrecvdata;
 byte irrecvbuffer_index = -1;
@@ -115,18 +111,32 @@ robot_t robot;
 
 void setSolenoidPWM(int new_PWM);
 
-//#define TOUCHSW_pin 17 //(Uno D2)
-
 void setSolenoidState()
 {
   if (robot.solenoid_state) setSolenoidPWM(230);
   else setSolenoidPWM(0);
 }
 
-// byte readTouchSwitch(void)
-// {
-//   return !digitalRead(TOUCHSW_pin);
-// }
+bool listenIR()
+{
+  if(Serial2.available()) {
+    Serial.write(irrecvdata);
+    if(irrecvdata == 'W') irrecvbuffer_index = 0;
+    else if(irrecvbuffer_index >= 0) {
+      if(irrecvdata == 'w' || irrecvdata == 'o' || irrecvdata == 'u') {
+        irrecvbuffer[irrecvbuffer_index] = irrecvdata;
+        irrecvbuffer_index++;
+        if(irrecvbuffer_index >= 4) {
+          irrecvbuffer[irrecvbuffer_index] = '\0';
+          irrecvbuffer_index = -1;
+          Serial.println("Received Instruction!");
+          Serial.println(irrecvbuffer);
+          return true;
+        }
+      }
+    }
+  }
+};
 
 void control(robot_t& robot);
 
@@ -784,10 +794,6 @@ void real_loop(void)
     //setMotorsPWM(50, 50);
 
     IPAddress ip = WiFi.localIP();
-
-    // serial_channels.send('i', ip[0], ip[1], ip [2], ip[3]);
-    
-    // if(udp_on) send_udp_channels();
     
     //Serial.print(F(" "));
     //Serial.print(ip.toString());
@@ -810,15 +816,10 @@ void real_loop(void)
     // // // // Serial.print(F(" E2: "));
     // // // // serial_print_format(robot.enc2, 4);
 
-    // Serial.printf("                                                                                                            ");
-    byte c;
-    for (c = 5; c >= 1; c--) {
+    for (byte c = 5; c >= 1; c--) {
        Serial.print(" ");
        Serial.print(IRLine.IR_values[c-1]);
     }
-
-    // // // //Serial.print(F(" T: "));
-    // // // //serial_print_format(robot.TouchSwitch, 4);
 
     Serial.print(F(" Tof: "));
     serial_print_format(robot.tof_dist, 4);
@@ -952,18 +953,6 @@ void real_loop(void)
       instructionCounter++;
     
     }
-    
-    /*
-    Serial.print(F(" V: "));
-    serial_print_format(robot.v, 4);
-    Serial.print(F(" W: "));
-    serial_print_format(robot.w, 4);
-
-    Serial.print(F(" Ve: "));
-    serial_print_format(robot.ve, 4);
-    Serial.print(F(" We: "));
-    serial_print_format(robot.we, 4);    
-    */
 
 
     Serial.println();
@@ -971,31 +960,8 @@ void real_loop(void)
 
 
     // if Start, wait for IR message
-      if(robot.state == START){
-        if (Serial2.available()) {
-            irrecvdata = Serial2.read();  
-            if(irrecvdata == 'U') {
-              Serial.print("!");
-            } else if(irrecvdata == 'W') {
-              irrecvbuffer_index = 0;
-            } else if(irrecvbuffer_index >= 0) {
-              irrecvbuffer[irrecvbuffer_index] = irrecvdata;
-              if(irrecvbuffer[irrecvbuffer_index] == 'w' || irrecvbuffer[irrecvbuffer_index] == 'o' || irrecvbuffer[irrecvbuffer_index] == 'u'){
-                irrecvbuffer_index++;
-                if(irrecvbuffer_index >= 4) {
-                  irrecvbuffer[irrecvbuffer_index] = '\0';
-                  irrecvbuffer_index = -1;
-                  Serial.println("Received Instruction!");
-                  Serial.println(irrecvbuffer);
-                  robot.state = SETUP;
-                }
-              } else {
-                Serial.write(irrecvdata);
-                Serial.println();
-              }
-          }
-        }
-      }
+      if(robot.state == START)
+        if(listenIR()) robot.state = SETUP;
 
       // if Setup, create boxes and start the setup for the Dijkstra
       if(robot.state == SETUP) {
@@ -1014,15 +980,7 @@ void real_loop(void)
             box.color = BLUE;
           
           boxes[i] = box;
-          
-          // Serial.printf("No da caixa : ");
-          // Serial.print(boxes[i].pos);
-          // Serial.printf("   ");
-          // Serial.printf("Status da caixa : ");
-          // Serial.print(boxes[i].status);
-          // Serial.printf("   ");
-          // Serial.printf("Cor da caixa : ");
-          // Serial.println(boxes[i].color);
+
         }
 
         scheduler.setUp(boxes, 4);
