@@ -831,7 +831,7 @@ void real_loop(void)
     serial_print_format(instructionCounter, 4);
 
 
-    if(robot.state == 8) {
+    if(robot.state == 101) {
 
       if (instructionCounter == instructions.size()) {
         if (currentBox.status == HOLDING) {
@@ -843,14 +843,22 @@ void real_loop(void)
         instructionCounter = 0;
       }
       
-      if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] != "Drop" || instructions[instructionCounter+1] != "Pick"))
+      if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] != "Drop" || instructions[instructionCounter+1] != "Pick")){
+        Serial.println("Case FLINE");
         robot.state = FLINE;
-      else if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] == "Drop" || instructions[instructionCounter+1] == "Pick"))
+      }
+      else if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] == "Drop" || instructions[instructionCounter+1] == "Pick")){
+        Serial.println("Case STOP");      
         robot.state = STOP;
-      else if (instructions[instructionCounter] == "Left" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop"))
+      }
+      else if (instructions[instructionCounter] == "Left" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop")){
+        Serial.println("Case TLEFT");
         robot.state = TLEFT;
-      else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop"))
+      }
+      else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop")){
+        Serial.println("Case TRIGHT");
         robot.state = TRIGHT;
+      }
       else if (instructions[instructionCounter] == "Pick") {
         robot.state = PICKB;
         // Assuming that after this state the box is picked
