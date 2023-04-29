@@ -929,17 +929,17 @@ void real_loop(void)
           // currentPort.occupied == true;
 
           //currentBox.num;
-          newBox.pos = currentBox.pos++;
-          if(currentBox.color == GREEN) {
-            newBox.color = BLUE;
-            newBox.status == WAINTING;
-            Serial.printf("GREEN");
-          }
-          else if(currentBox.color == RED){
-            newBox.color = GREEN;
-            newBox.status == WAINTING;
-            Serial.printf("RED");
-          }
+          // newBox.pos = currentBox.pos++;
+          // if(currentBox.color == GREEN) {
+          //   newBox.color = BLUE;
+          //   newBox.status == WAINTING;
+          //   Serial.printf("GREEN");
+          // }
+          // else if(currentBox.color == RED){
+          //   newBox.color = GREEN;
+          //   newBox.status == WAINTING;
+          //   Serial.printf("RED");
+          // }
         }
         currentBox = scheduler.getBox();
       }else if (instructions[instructionCounter] == "Left"){
