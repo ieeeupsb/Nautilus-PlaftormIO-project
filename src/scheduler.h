@@ -16,7 +16,6 @@ class Scheduler
 private:
     Direction dir;
     std::vector<Port> deliveryPorts;
-    std::vector<Port> deliveryNodesB;
     std::vector<Port> deliveryNodesA;
     int currentPosition;
     Node *nodeVec;
@@ -29,6 +28,7 @@ public:
     std::priority_queue<Box, std::vector<Box>, boxComparision> queue;
     std::vector<std::string> getRoute(Box box, Port port);
     std::vector<std::string> getRoute();
+    std::vector<Port> deliveryNodesB;
     Box getBox();
     Port getAvailablePort(Box currentBox);
     Node* getNodeVec();

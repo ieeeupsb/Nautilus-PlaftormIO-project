@@ -904,6 +904,16 @@ void real_loop(void)
           
         }
         // Assuming that after this state the box is picked
+        if(currentBox.color == RED){
+          int counterGreen = 0;
+          for(auto pick : scheduler.deliveryNodesB){
+            pick.occupied = false;
+            Serial.printf("deliveryNodesB[");
+            Serial.print(counterGreen);
+            Serial.printf("].occupied = ");
+            Serial.println(scheduler.deliveryNodesB[counterGreen].occupied);
+          }
+        }
         currentBox.status = HOLDING;
         Serial.println("Case STOP");
       }
