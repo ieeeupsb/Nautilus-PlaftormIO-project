@@ -795,8 +795,8 @@ void real_loop(void)
     Serial.print(F(" St: "));
     serial_print_format(robot.state, 4);
 
-    // // // Serial.print(F(" Iman: "));
-    // // // serial_print_format(robot.solenoid_state, 4);
+    Serial.print(F(" Iman: "));
+    serial_print_format(robot.solenoid_state, 4);
 
     Serial.print(F(" Rel_Theta: "));
     serial_print_format(robot.rel_theta, 4);
@@ -833,17 +833,21 @@ void real_loop(void)
     serial_print_format(instructionCounter, 4);
 
 
+    //pedro
+
     if(robot.state == STOP || robot.state == 101) {
 
-      if (instructionCounter == instructions.size()) {
-        if (currentBox.status == HOLDING) {
-          instructions = scheduler.getRoute(currentBox, currentPort);
-        } else {
-          instructions = scheduler.getRoute();
+        if (instructionCounter == instructions.size()) {
+          if (currentBox.status == HOLDING) {
+            instructions = scheduler.getRoute(currentBox, currentPort);
+          } else {
+            instructions = scheduler.getRoute();
+            //if(scheduler.flag = 1) robot.solenoid_state = 0;
+
+          }
+            instructionCounter = 0;
+           pathCounter = 0;
         }
-        instructionCounter = 0;
-        pathCounter = 0;
-      }
       
       if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] != "Drop" || instructions[instructionCounter+1] != "Pick")){
         Serial.println("Case FLINE");
@@ -895,7 +899,10 @@ void real_loop(void)
       else if (instructions[instructionCounter] == "Pick") {
         if(currentBox.pos == 0 || currentBox.pos == 1 || currentBox.pos == 2 || currentBox.pos == 3) robot.state = PICKB;
 
-        if(currentBox.pos == 16 || currentBox.pos == 23|| currentBox.pos == 12 || currentBox.pos == 19) robot.state = PICKBV;
+        if(currentBox.pos == 16 || currentBox.pos == 23|| currentBox.pos == 12 || currentBox.pos == 19){ 
+          robot.state = PICKBV;
+          
+        }
         // Assuming that after this state the box is picked
         currentBox.status = HOLDING;
         Serial.println("Case STOP");

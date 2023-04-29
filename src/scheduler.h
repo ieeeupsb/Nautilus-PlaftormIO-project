@@ -7,6 +7,9 @@
 #include "util.h"
 #include "config.h"
 #include "Node.h"
+#include "robot.h"
+
+robot_t bot;
 
 class Scheduler
 {
@@ -31,6 +34,7 @@ public:
     Node* getNodeVec();
     int * getPath();
     int getPathSize();
+    int flag = 0;
 };
 
 Scheduler::Scheduler(int startPosition) {
@@ -155,6 +159,11 @@ std::vector<std::string> Scheduler::getRoute(Box box, Port destPort) {
 
 std::vector<std::string> Scheduler::getRoute() {
     Dijkstra dijkstra = Dijkstra(N_NODES);
+
+    if(queue.empty()){
+        //flag = 1;
+        Serial.print("FILA -= VAZIA =- BRO");
+    }
     
     Box box = queue.top();
     queue.pop();
