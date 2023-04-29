@@ -841,8 +841,6 @@ void real_loop(void)
         } else {
           instructions = scheduler.getRoute();
         }
-        robot.mypath = scheduler.getPath();
-        robot.mypathsize = scheduler.getPathSize();
         instructionCounter = 0;
         pathCounter = 0;
       }
@@ -910,6 +908,7 @@ void real_loop(void)
         currentBox.status = DELIVERED;
         currentPort = scheduler.getAvailablePort(currentBox);
         currentPort.occupied = true;
+        scheduler.updatePorts(currentPort);
         // Serial.println();
         // Serial.printf("Current Port ");
         // Serial.print(currentPort.pos);
@@ -1032,8 +1031,6 @@ void real_loop(void)
         currentBox = scheduler.getBox();
         currentPort = scheduler.getAvailablePort(currentBox);
         instructions = scheduler.getRoute();
-        robot.mypath = scheduler.getPath();
-        robot.mypathsize = scheduler.getPathSize();
         // Serial.println("Aqui");
         for(auto inst: instructions) {
           Serial.println(inst.c_str());

@@ -17,8 +17,6 @@ private:
     std::vector<Port> deliveryNodesA;
     int currentPosition;
     Node *nodeVec;
-    int *path; 
-    int pathSize;
 public:
     Scheduler(int startPosition);
     ~Scheduler();
@@ -29,9 +27,33 @@ public:
     Box getBox();
     Port getAvailablePort(Box currentBox);
     Node* getNodeVec();
-    int * getPath();
-    int getPathSize();
+    void updatePorts(Port port);
 };
+
+void Scheduler::updatePorts(Port port){
+    if(port.occupied == true){
+        
+            for(int i = 0; i<deliveryPorts.size(); i++){
+                if (deliveryPorts[i].pos == port.pos)
+                    deliveryPorts[i].occupied = port.occupied; 
+            }
+        }
+
+          
+            for(int i = 0; i<deliveryNodesA.size(); i++){
+                if (deliveryNodesA[i].pos == port.pos)
+                    deliveryNodesA[i].occupied = port.occupied; 
+            
+        }
+            
+        
+            for(int i = 0; i<deliveryNodesB.size(); i++){
+                if (deliveryNodesB[i].pos == port.pos)
+                    deliveryNodesB[i].occupied = port.occupied; 
+            
+        }
+    
+}
 
 Scheduler::Scheduler(int startPosition) {
     currentPosition = startPosition;
@@ -76,51 +98,50 @@ std::vector<std::string> Scheduler::getRoute(Box box, Port destPort) {
     Dijkstra dijkstra = Dijkstra(N_NODES);
     
     // TODO: Chose which port to go based on the color
-    if(destPort.occupied == true){
-        if(box.color == BLUE){
-            for(int i = 0; i<deliveryPorts.size(); i++){
-                if (deliveryPorts[i].pos == destPort.pos)
-                    deliveryPorts[i].occupied = destPort.occupied; 
-            }
-        }
+    // if(destPort.occupied == true){
+    //     if(box.color == BLUE){
+    //         for(int i = 0; i<deliveryPorts.size(); i++){
+    //             if (deliveryPorts[i].pos == destPort.pos)
+    //                 deliveryPorts[i].occupied = destPort.occupied; 
+    //         }
+    //     }
 
-        if(box.color == RED){   
-            for(int i = 0; i<deliveryNodesA.size(); i++){
-                if (deliveryNodesA[i].pos == destPort.pos)
-                    deliveryNodesA[i].occupied = destPort.occupied; 
-            }
-        }
+    //     if(box.color == RED){   
+    //         for(int i = 0; i<deliveryNodesA.size(); i++){
+    //             if (deliveryNodesA[i].pos == destPort.pos)
+    //                 deliveryNodesA[i].occupied = destPort.occupied; 
+    //         }
+    //     }
             
-        if(box.color == GREEN){
-            for(int i = 0; i<deliveryNodesB.size(); i++){
-                if (deliveryNodesB[i].pos == destPort.pos)
-                    deliveryNodesB[i].occupied = destPort.occupied; 
-            }
-        }
-        destPort = getAvailablePort(box);
+    //     if(box.color == GREEN){
+    //         for(int i = 0; i<deliveryNodesB.size(); i++){
+    //             if (deliveryNodesB[i].pos == destPort.pos)
+    //                 deliveryNodesB[i].occupied = destPort.occupied; 
+    //         }
+    // //     }
+    //     destPort = getAvailablePort(box);
 
-        Serial.println();
-        Serial.printf("Porta ");
-        Serial.print(destPort.pos);
-        Serial.printf(".occupied = ");
-        Serial.println(destPort.occupied);
-    }
-    else {
-        Serial.println();
-        Serial.printf("Porta ");
-        Serial.print(destPort.pos);
-        Serial.printf(".occupied = ");
-        Serial.println(destPort.occupied);
-    }
+    //     Serial.println();
+    //     Serial.printf("Porta ");
+    //     Serial.print(destPort.pos);
+    //     Serial.printf(".occupied = ");
+    //     Serial.println(destPort.occupied);
+    // }
+    // else {
+    //     Serial.println();
+    //     Serial.printf("Porta ");
+    //     Serial.print(destPort.pos);
+    //     Serial.printf(".occupied = ");
+    //     Serial.println(destPort.occupied);
+    // }
 
     // Serial.printf("No de destino: ");
     // Serial.println(destPort.pos);
     // If box is waiting then we need to pick it up
     dijkstra.findPath(graph, currentPosition, destPort.pos);
         
-    path = dijkstra.getPathArray();
+    auto path = dijkstra.getPathArray();
     currentPosition = path[dijkstra.getPathSize() - 1];
-    pathSize = dijkstra.getPathSize();
     // Serial.printf("Minimun Path is: [ ");
     // int a= dijkstra.getPathSize();
     // for(int i = 0; i < a; i++){
@@ -134,12 +155,32 @@ std::vector<std::string> Scheduler::getRoute(Box box, Port destPort) {
 
     int size = dijkstra.getPathSize();
     std::vector<std::string> dirVec = dir.definePath(path, size, nodeVec);
+
+    if (box.color != BLUE) {
+        Box newBox;
+        if (box.color == GREEN) newBox.color = BLUE;
+
+        else if (box.color == RED) newBox.color = GREEN;
+        
+        newBox.num = box.num;
+        newBox.pos = currentPosition+1;
+        // Serial.print(F(" BoxPos: "));
+        // serial_print_format(box.pos, 4);
+        newBox.status = WAINTING;
+
+        queue.push(newBox);
+    }
       
     return dirVec;
 }
 
 std::vector<std::string> Scheduler::getRoute() {
     Dijkstra dijkstra = Dijkstra(N_NODES);
+
+    if(queue.empty()){
+    Serial.print(F(" A QUEUE TA VAZIA BRO "));
+
+    }
     
     Box box = queue.top();
     queue.pop();
@@ -147,14 +188,13 @@ std::vector<std::string> Scheduler::getRoute() {
     // If box is waiting then we need to pick it up
     dijkstra.findPath(graph, currentPosition, box.pos);
         
-    path = dijkstra.getPathArray();
+    auto path = dijkstra.getPathArray();
     currentPosition = path[dijkstra.getPathSize() - 1];
 
     nodeVec = (Node *)calloc(N_NODES, sizeof(Node));
     dir.nodeVector(nodeVec);
 
     int size = dijkstra.getPathSize();
-    pathSize = dijkstra.getPathSize();
     std::vector<std::string> dirVec = dir.definePath(path, size, nodeVec);
       
     return dirVec;
@@ -193,12 +233,4 @@ Port Scheduler::getAvailablePort(Box currentBox) {
 
 Node* Scheduler::getNodeVec() {
     return nodeVec;
-}
-
-int * Scheduler::getPath() {
-    return path;
-}
-
-int Scheduler::getPathSize(){
-    return pathSize;
 }
