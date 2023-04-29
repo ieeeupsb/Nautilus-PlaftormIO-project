@@ -145,7 +145,7 @@ void robot_t::followLine(IRLine_t& IRLine){
       //  }else if (IRLine.IR_values[4] > 500 && IRLine.IR_values[3] <= 500){
       //   setRobotVW(0.065, 1.5);
 
-      //  } else if (IRLine.IR_values[1] > 500){
+      } else if (IRLine.IR_values[1] > 500){
         setRobotVW(0.11, -1);
 
        }else if (IRLine.IR_values[0] > 500 && IRLine.IR_values[1] > 500){
