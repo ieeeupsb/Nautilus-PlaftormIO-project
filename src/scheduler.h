@@ -71,26 +71,27 @@ void Scheduler::setUp(Box *boxes, unsigned int numBoxes) {
 std::vector<std::string> Scheduler::getRoute(Box box, Port destPort) {
     Dijkstra dijkstra = Dijkstra(N_NODES);
     
-    Serial.println();
-    Serial.printf("Porta ");
-    Serial.print(destPort.pos);
-    Serial.printf(".occupied = ");
-    Serial.println(destPort.occupied);
     // TODO: Chose which port to go based on the color
     if(destPort.occupied == true){
-        for(int i = 0; i<deliveryPorts.size(); i++){
-            if (deliveryPorts[i].pos == destPort.pos)
-                deliveryPorts[i].occupied = destPort.occupied; 
+        if(box.color == BLUE){
+            for(int i = 0; i<deliveryPorts.size(); i++){
+                if (deliveryPorts[i].pos == destPort.pos)
+                    deliveryPorts[i].occupied = destPort.occupied; 
+            }
         }
-        
-        for(int i = 0; i<deliveryNodesA.size(); i++){
-            if (deliveryNodesA[i].pos == destPort.pos)
-                deliveryNodesA[i].occupied = destPort.occupied; 
+
+        if(box.color == RED){   
+            for(int i = 0; i<deliveryNodesA.size(); i++){
+                if (deliveryNodesA[i].pos == destPort.pos)
+                    deliveryNodesA[i].occupied = destPort.occupied; 
+            }
         }
-        
-        for(int i = 0; i<deliveryNodesB.size(); i++){
-            if (deliveryNodesB[i].pos == destPort.pos)
-                deliveryNodesB[i].occupied = destPort.occupied; 
+            
+        if(box.color == GREEN){
+            for(int i = 0; i<deliveryNodesB.size(); i++){
+                if (deliveryNodesB[i].pos == destPort.pos)
+                    deliveryNodesB[i].occupied = destPort.occupied; 
+            }
         }
         destPort = getAvailablePort(box);
 

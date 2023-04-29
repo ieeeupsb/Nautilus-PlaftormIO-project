@@ -331,6 +331,7 @@ Scheduler scheduler(25);
 std::vector<std::string> instructions;
 int instructionCounter = 0;
 Box currentBox;
+Box newBox;
 Port currentPort;
 Box boxes[4]; 
 
@@ -831,7 +832,7 @@ void real_loop(void)
     serial_print_format(instructionCounter, 4);
 
 
-    if(robot.state == /*STOP*/101) {
+    if(robot.state == STOP) {
 
       if (instructionCounter == instructions.size()) {
         if (currentBox.status == HOLDING) {
@@ -843,23 +844,70 @@ void real_loop(void)
         instructionCounter = 0;
       }
       
-      if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] != "Drop" || instructions[instructionCounter+1] != "Pick"))
+      if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] != "Drop" || instructions[instructionCounter+1] != "Pick")){
+        Serial.println("Case FLINE");
         robot.state = FLINE;
-      else if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] == "Drop" || instructions[instructionCounter+1] == "Pick"))
+      }
+      // else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Left" && instructions[instructionCounter+2] == "Pick")){
+      //   // instructions[instructionCounter] = "Line";
+      //   // instructions[instructionCounter + 1] = "Right";
+      //   // instructions[instructionCounter + 2] = "Left";
+      //   // instructions[instructionCounter + 3] = "Pick";
+      //   instructions.insert(instructions.begin()+2, "Line");
+      //   Serial.println("CASO PROBLEMA1");
+      //   robot.state = FLINE;
+      // }
+      // else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Line" && instructions[instructionCounter+2] == "Left" && instructions[instructionCounter+3] == "Pick")){
+      //   instructions[instructionCounter] = "Line";
+      //   instructions[instructionCounter + 1] = "Line";
+      //   instructions[instructionCounter + 2] = "Right";
+      //   instructions[instructionCounter + 3] = "Left";
+      //   instructions[instructionCounter + 4] = "Pick";
+      //   Serial.println("CASO PROBLEMA2");
+      //   robot.state = FLINE;
+      // }
+      
+      // else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Line" && instructions[instructionCounter+2] == "Line" && instructions[instructionCounter+3] == "Left" && instructions[instructionCounter+4] == "Pick")){
+      //   Serial.println("CASO PROBLEMA3");
+      //   instructions[instructionCounter] = "Line";
+      //   instructions[instructionCounter + 1] = "Line";
+      //   instructions[instructionCounter + 2] = "Line";
+      //   instructions[instructionCounter + 3] = "Right";
+      //   instructions[instructionCounter + 4] = "Left";
+      //   instructions[instructionCounter + 5] = "Pick";
+      //   robot.state = FLINE;
+      // }
+
+      else if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] == "Drop" || instructions[instructionCounter+1] == "Pick")){
+        Serial.println("Case STOP");
         robot.state = STOP;
-      else if (instructions[instructionCounter] == "Left" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop"))
+      }
+      else if (instructions[instructionCounter] == "Left" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop")){
+        Serial.println("Case TLEFT");
         robot.state = TLEFT;
-      else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop"))
+      }
+      else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Pick" || instructions[instructionCounter+1] == "Drop")){
+        Serial.println("Case TRIGHT");      
         robot.state = TRIGHT;
+      }
       else if (instructions[instructionCounter] == "Pick") {
         robot.state = PICKB;
         // Assuming that after this state the box is picked
         currentBox.status = HOLDING;
+        Serial.println("Case STOP");
       }
       else if (instructions[instructionCounter] == "Drop") {
+        Serial.println("Case DROP");
         robot.state = DROPB;
         // Assuming that the box will be delivered after this state
         currentBox.status = DELIVERED;
+        currentPort = scheduler.getAvailablePort(currentBox);
+        currentPort.occupied = true;
+        // Serial.println();
+        // Serial.printf("Current Port ");
+        // Serial.print(currentPort.pos);
+        // Serial.printf(".occupied = ");
+        // Serial.println(currentPort.occupied);
         if(currentBox.color == GREEN || currentBox.color == RED){
           // Box newBox;
           // newBox.num = currentBox.num;
@@ -869,24 +917,32 @@ void real_loop(void)
           // newBox.status == WAINTING;
           // scheduler.queue.pop();
           // scheduler.queue.push(newBox);
-          currentPort = scheduler.getAvailablePort(currentBox);
-          currentPort.occupied == true;
+          // currentPort = scheduler.getAvailablePort(currentBox);
+          // currentPort.occupied == true;
 
           //currentBox.num;
-          currentBox.pos++;
-          if(currentBox.color == GREEN) currentBox.color = BLUE;
-          else if(currentBox.color == RED) currentBox.color = GREEN;
-          currentBox.status == WAINTING;
-          
+          newBox.pos = currentBox.pos++;
+          if(currentBox.color == GREEN) {
+            newBox.color = BLUE;
+            newBox.status == WAINTING;
+            Serial.printf("GREEN");
+          }
+          else if(currentBox.color == RED){
+            newBox.color = GREEN;
+            newBox.status == WAINTING;
+            Serial.printf("RED");
+          }
         }
         currentBox = scheduler.getBox();
-        currentPort = scheduler.getAvailablePort(currentBox);
-        currentPort.occupied = true;
-      }else if (instructions[instructionCounter] == "Left")
+      }else if (instructions[instructionCounter] == "Left"){
+        Serial.println("Case LEFTLINE");      
         robot.state = LEFTLINE;
+      }
 
-      else if (instructions[instructionCounter] == "Right")
+      else if (instructions[instructionCounter] == "Right"){
+        Serial.println("Case RIGHTLINE");      
         robot.state = RIGHTLINE;
+      }
 
       instructionCounter++;
     
