@@ -43,7 +43,19 @@ void Scheduler::setUp(Box *boxes, unsigned int numBoxes) {
         deliveryPorts.push_back(port);        
     }
 
-
+    for (auto deliveryNodeA : processNodesA) {
+        Port port1;
+        port1.pos = deliveryNodeA;
+        port1.occupied = false;
+        deliveryNodesA.push_back(port1);        
+    }
+    
+    for (auto deliveryNodeB : processNodesB) {
+        Port port2;
+        port2.pos = deliveryNodeB;
+        port2.occupied = false;
+        deliveryNodesB.push_back(port2);        
+    }
     for (size_t i = 0; i < numBoxes; i++)
     {   
         queue.push(boxes[i]);
