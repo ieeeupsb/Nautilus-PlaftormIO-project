@@ -25,12 +25,12 @@ void control(robot_t& robot)
       robot.rel_theta = 0;
       robot.setState(STOP);
       
-    } else if(robot.state == TLEFT && robot.rel_theta > radians (80)){
+    } else if(robot.state == TLEFT && robot.rel_theta > radians (70)){
       IRLine.crosses = 0;
       robot.setState(STOP);
 
       
-    } else if(robot.state == TRIGHT && robot.rel_theta < radians (-80)){
+    } else if(robot.state == TRIGHT && robot.rel_theta < radians (-70)){
       IRLine.crosses = 0;
       robot.setState(STOP);  
       
@@ -100,19 +100,19 @@ void control(robot_t& robot)
       robot.setState(STOP);
     
  
-    } else if(robot.state == DROPBV && robot.tis > 1300){
+    } else if(robot.state == DROPBV && robot.tis > 1500){
       robot.rel_s = 0;
       robot.rel_theta = 0;
       //robot.setState(22);
       robot.setState(21);
 
       
-    } else if(robot.state == 21 && robot.rel_s < -0.20){
+    } else if(robot.state == 31 && robot.rel_s < -0.22){
     robot.rel_theta = 0;
     robot.setState(22);
 
       
-    } else if(robot.state == 22 && robot.rel_theta < radians(-160)){
+    } else if(robot.state == 32 && robot.rel_theta < radians(-160)){
       IRLine.crosses = 0;
       robot.rel_theta = 0;
       robot.setState(STOP);
@@ -241,6 +241,15 @@ void control(robot_t& robot)
     else if (robot.state == DROPBV) {  
       //  robot.followLineRight(IRLine, robot.follow_v, robot.follow_k);
        robot.followLine(IRLine);
+    }
+    
+    else if (robot.state == 31) {  //iman off and go back
+      robot.solenoid_state = 0;
+      robot.setRobotVW(-0.1, 0);
+      
+
+    } else if (robot.state == 32) {  //turn 180
+      robot.setRobotVW(0, -2.5); // w was 3
     }
     // if (robot.state == 0) {         // Robot Stoped            
     //   robot.solenoid_state = 0;

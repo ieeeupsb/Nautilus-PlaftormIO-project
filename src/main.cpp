@@ -841,16 +841,12 @@ void real_loop(void)
         } else {
           instructions = scheduler.getRoute();
         }
-        robot.mypath = scheduler.getPath();
-        robot.mypathsize = scheduler.getPathSize();
         instructionCounter = 0;
         pathCounter = 0;
       }
       
       if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] != "Drop" || instructions[instructionCounter+1] != "Pick")){
         Serial.println("Case FLINE");
-        Serial.printf("Mypath: ");
-        Serial.println(robot.mypath[pathCounter]);
         robot.state = FLINE;
       }
       else if (pathCounter <= 0 && instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Left" && instructions[instructionCounter+2] == "Pick")){
@@ -1033,8 +1029,6 @@ void real_loop(void)
         currentBox = scheduler.getBox();
         currentPort = scheduler.getAvailablePort(currentBox);
         instructions = scheduler.getRoute();
-        robot.mypath = scheduler.getPath();
-        robot.mypathsize = scheduler.getPathSize();
         // Serial.println("Aqui");
         for(auto inst: instructions) {
           Serial.println(inst.c_str());
