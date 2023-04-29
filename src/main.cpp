@@ -863,26 +863,19 @@ void real_loop(void)
         pathCounter++;
         robot.state = FLINE;
       }
-      // else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Line" && instructions[instructionCounter+2] == "Left" && instructions[instructionCounter+3] == "Pick")){
-      //   instructions[instructionCounter] = "Line";
-      //   instructions[instructionCounter + 1] = "Line";
-      //   instructions[instructionCounter + 2] = "Right";
-      //   instructions[instructionCounter + 3] = "Left";
-      //   instructions[instructionCounter + 4] = "Pick";
-      //   Serial.println("CASO PROBLEMA2");
-      //   robot.state = FLINE;
-      // }
+      else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Line" && instructions[instructionCounter+2] == "Left" && instructions[instructionCounter+3] == "Pick")){
+        instructions.insert(instructions.begin()+2, "Line");
+        pathCounter++;
+        Serial.println("CASO PROBLEMA2");
+        robot.state = FLINE;
+      }
       
-      // else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Line" && instructions[instructionCounter+2] == "Line" && instructions[instructionCounter+3] == "Left" && instructions[instructionCounter+4] == "Pick")){
-      //   Serial.println("CASO PROBLEMA3");
-      //   instructions[instructionCounter] = "Line";
-      //   instructions[instructionCounter + 1] = "Line";
-      //   instructions[instructionCounter + 2] = "Line";
-      //   instructions[instructionCounter + 3] = "Right";
-      //   instructions[instructionCounter + 4] = "Left";
-      //   instructions[instructionCounter + 5] = "Pick";
-      //   robot.state = FLINE;
-      // }
+      else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Line" && instructions[instructionCounter+2] == "Line" && instructions[instructionCounter+3] == "Left" && instructions[instructionCounter+4] == "Pick")){
+        Serial.println("CASO PROBLEMA3");
+        instructions.insert(instructions.begin()+2, "Line");
+        pathCounter++;
+        robot.state = FLINE;
+      }
 
       else if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] == "Drop" || instructions[instructionCounter+1] == "Pick")){
         Serial.println("Case STOP");
