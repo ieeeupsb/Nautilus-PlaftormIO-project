@@ -123,7 +123,7 @@ void robot_t::followLine(IRLine_t& IRLine){
         v_req = 0.05;
         w_req = 1.5;
        }
-      if (IRLine.IR_values[0] > 500){
+      if (IRLine.IR_values[0] > 499){
         v_req = 0.05;
         w_req = -1.5;
       }
