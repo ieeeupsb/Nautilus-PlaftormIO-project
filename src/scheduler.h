@@ -102,6 +102,21 @@ std::vector<std::string> Scheduler::getRoute(Box box, Port destPort) {
 
     int size = dijkstra.getPathSize();
     std::vector<std::string> dirVec = dir.definePath(path, size, nodeVec);
+
+    if (box.color != BLUE) {
+        Box newBox;
+        if (box.color == GREEN)
+            newBox.color = BLUE;
+        else if (box.color == RED)
+            newBox.color = GREEN;
+        
+        newBox.num = box.num;
+        newBox.pos = box.pos++;
+        newBox.status = WAINTING;
+
+        
+        queue.push(newBox);
+    }
       
     return dirVec;
 }
