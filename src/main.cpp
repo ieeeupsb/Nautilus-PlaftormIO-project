@@ -861,7 +861,7 @@ void real_loop(void)
         // Assuming that the box will be delivered after this state
         currentBox.status = DELIVERED;
         // currentBox = scheduler.getBox();
-        // currentPort = scheduler.getAvailablePort();
+        currentPort = scheduler.getAvailablePort(currentBox);
         currentPort.occupied = true;
       }else if (instructions[instructionCounter] == "Left")
         robot.state = LEFTLINE;

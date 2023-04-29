@@ -96,6 +96,21 @@ std::vector<std::string> Scheduler::getRoute(Box box, Port destPort) {
                     deliveryNodesB[i].occupied = destPort.occupied; 
             }
         }
+
+        // for(int i = 0; i<deliveryPorts.size(); i++){
+        //     if (deliveryPorts[i].pos == destPort.pos)
+        //         deliveryPorts[i].occupied = destPort.occupied; 
+        // }
+        
+        // for(int i = 0; i<deliveryNodesA.size(); i++){
+        //     if (deliveryNodesA[i].pos == destPort.pos)
+        //         deliveryNodesA[i].occupied = destPort.occupied; 
+        // }
+        
+        // for(int i = 0; i<deliveryNodesB.size(); i++){
+        //     if (deliveryNodesB[i].pos == destPort.pos)
+        //         deliveryNodesB[i].occupied = destPort.occupied; 
+        // }
         destPort = getAvailablePort(box);
 
         Serial.println();
