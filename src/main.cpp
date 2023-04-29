@@ -860,8 +860,8 @@ void real_loop(void)
         robot.state = DROPB;
         // Assuming that the box will be delivered after this state
         currentBox.status = DELIVERED;
-        currentBox = scheduler.getBox();
-        currentPort = scheduler.getAvailablePort();
+        // currentBox = scheduler.getBox();
+        // currentPort = scheduler.getAvailablePort();
         currentPort.occupied = true;
       }else if (instructions[instructionCounter] == "Left")
         robot.state = LEFTLINE;
@@ -947,7 +947,7 @@ void real_loop(void)
 
         scheduler.setUp(boxes, 4);
         currentBox = scheduler.getBox();
-        currentPort = scheduler.getAvailablePort();
+        currentPort = scheduler.getAvailablePort(currentBox);
         instructions = scheduler.getRoute();
         // Serial.println("Aqui");
         for(auto inst: instructions) {

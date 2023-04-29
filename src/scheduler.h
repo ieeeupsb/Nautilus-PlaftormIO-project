@@ -14,6 +14,8 @@ private:
     Direction dir;
     std::priority_queue<Box, std::vector<Box>, boxComparision> queue;
     std::vector<Port> deliveryPorts;
+    std::vector<Port> deliveryNodesB;
+    std::vector<Port> deliveryNodesA;
     int currentPosition;
     Node *nodeVec;
 public:
@@ -23,7 +25,7 @@ public:
     std::vector<std::string> getRoute(Box box, Port port);
     std::vector<std::string> getRoute();
     Box getBox();
-    Port getAvailablePort();
+    Port getAvailablePort(Box currentBox);
     Node* getNodeVec();
 };
 
@@ -73,12 +75,28 @@ std::vector<std::string> Scheduler::getRoute(Box box, Port destPort) {
     Serial.printf(".occupied = ");
     Serial.println(destPort.occupied);
     // TODO: Chose which port to go based on the color
-    if(destPort.occupied == true){
-        for(int i = 0; i<deliveryPorts.size(); i++){
-            if (deliveryPorts[i].pos == destPort.pos)
-                deliveryPorts[i].occupied = destPort.occupied; 
+     if(destPort.occupied == true){
+        if(box.color == BLUE){
+            for(int i = 0; i<deliveryPorts.size(); i++){
+                if (deliveryPorts[i].pos == destPort.pos)
+                    deliveryPorts[i].occupied = destPort.occupied; 
+            }
         }
-        destPort = getAvailablePort();
+
+        if(box.color == RED){   
+            for(int i = 0; i<deliveryNodesA.size(); i++){
+                if (deliveryNodesA[i].pos == destPort.pos)
+                    deliveryNodesA[i].occupied = destPort.occupied; 
+            }
+        }
+            
+        if(box.color == GREEN){
+            for(int i = 0; i<deliveryNodesB.size(); i++){
+                if (deliveryNodesB[i].pos == destPort.pos)
+                    deliveryNodesB[i].occupied = destPort.occupied; 
+            }
+        }
+        destPort = getAvailablePort(box);
 
         Serial.println();
         Serial.printf("Porta ");
@@ -158,11 +176,24 @@ Box Scheduler::getBox() {
     return queue.top();
 }
 
-Port Scheduler::getAvailablePort() {
-    for (auto port: deliveryPorts) {
-        if (port.occupied == false)
-            return port;
+Port Scheduler::getAvailablePort(Box currentBox) {
+        if(currentBox.color == BLUE){
+        for (Port port: deliveryPorts) {
+            if (port.occupied == false)
+                return port;
+        }
+    } else if(currentBox.color == GREEN){
+        for (Port port1: deliveryNodesB) {
+            if (port1.occupied == false)
+                return port1;
+        }
+    } else if(currentBox.color == RED){
+        for (Port port2: deliveryNodesA) {
+            if (port2.occupied == false)
+                return port2;
+        }
     }
+
 }
 
 Node* Scheduler::getNodeVec() {
