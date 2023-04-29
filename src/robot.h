@@ -33,6 +33,21 @@
 #include "IRLine.h"
 #include "PID.h"
 
+typedef enum
+{
+    STOP,
+    FLINE,
+    TLEFT,
+    TRIGHT,
+    PICKB,
+    DROPB,
+    LEFTLINE,
+    RIGHTLINE,
+    START,
+    SETUP,
+    DROPG
+} State;
+
 typedef enum { 
   cm_pwm,
   cm_pid

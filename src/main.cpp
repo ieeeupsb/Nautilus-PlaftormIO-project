@@ -912,7 +912,7 @@ void real_loop(void)
         // Serial.printf(".occupied = ");
         // Serial.println(currentPort.occupied);
         if(currentBox.color == GREEN || currentBox.color == RED){
-          robot.state = DROPBV;
+          robot.state = DROPG;
           Serial.println("CAIXA VERDE OU VERMELHA");
           // Box newBox;
           // newBox.num = currentBox.num;
