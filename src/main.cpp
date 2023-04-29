@@ -904,6 +904,7 @@ void real_loop(void)
       }
       else if (instructions[instructionCounter] == "Drop") {
         Serial.println("Case DROP");
+        if(currentBox.color == BLUE)
         robot.state = DROPB;
         // Assuming that the box will be delivered after this state
         currentBox.status = DELIVERED;
@@ -915,6 +916,7 @@ void real_loop(void)
         // Serial.printf(".occupied = ");
         // Serial.println(currentPort.occupied);
         if(currentBox.color == GREEN || currentBox.color == RED){
+          robot.state = DROPBV;
           // Box newBox;
           // newBox.num = currentBox.num;
           // newBox.pos = currentBox.pos++;

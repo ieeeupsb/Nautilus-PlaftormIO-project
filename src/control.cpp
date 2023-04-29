@@ -116,6 +116,7 @@ void control(robot_t& robot)
       IRLine.crosses = 0;
       robot.rel_theta = 0;
       robot.setState(STOP);
+    }
     //  if(robot.state == 0 && robot.tof_dist > 0.10 && robot.prev_tof_dist < 0.05 && robot.tis > 3000) {
     //   robot.rel_s = 0;
     //   robot.setState(1);
