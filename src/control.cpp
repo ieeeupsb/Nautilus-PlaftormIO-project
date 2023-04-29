@@ -238,7 +238,10 @@ void control(robot_t& robot)
       robot.solenoid_state = 0;
       robot.setRobotVW(0, 0);
     }
-
+     else if (robot.state == DROPBV) {  
+      //  robot.followLineRight(IRLine, robot.follow_v, robot.follow_k);
+       robot.followLine(IRLine);
+     }
     // if (robot.state == 0) {         // Robot Stoped            
     //   robot.solenoid_state = 0;
     //   robot.setRobotVW(0, 0);

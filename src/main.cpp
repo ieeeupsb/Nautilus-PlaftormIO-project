@@ -332,7 +332,6 @@ std::vector<std::string> instructions;
 int instructionCounter = 0;
 int pathCounter = 0;
 Box currentBox;
-Box newBox;
 Port currentPort;
 Box boxes[4]; 
 
@@ -914,8 +913,7 @@ void real_loop(void)
         // Serial.print(currentPort.pos);
         // Serial.printf(".occupied = ");
         // Serial.println(currentPort.occupied);
-        if(currentBox.color == GREEN || currentBox.color == RED){
-          robot.state = DROPBV;
+        if(currentBox.color == GREEN || currentBox.color == RED) robot.state = DROPBV;
           // Box newBox;
           // newBox.num = currentBox.num;
           // newBox.pos = currentBox.pos++;
@@ -928,8 +926,8 @@ void real_loop(void)
           // currentPort.occupied == true;
 
           //currentBox.num;
-          newBox.pos = currentBox.pos++;
-          if(currentBox.color == GREEN) {
+          //newBox.pos = currentBox.pos++;
+         /* if(currentBox.color == GREEN) {
             newBox.color = BLUE;
             newBox.status == WAINTING;
             Serial.printf("GREEN");
@@ -938,8 +936,8 @@ void real_loop(void)
             newBox.color = GREEN;
             newBox.status == WAINTING;
             Serial.printf("RED");
-          }
-        }
+          }*/
+        
         currentBox = scheduler.getBox();
       }else if (instructions[instructionCounter] == "Left"){
         Serial.println("Case LEFTLINE");      
