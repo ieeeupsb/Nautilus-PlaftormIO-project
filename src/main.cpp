@@ -330,6 +330,7 @@ void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info)
 Scheduler scheduler(25);
 std::vector<std::string> instructions;
 int instructionCounter = 0;
+int pathCounter = 0;
 Box currentBox;
 Box newBox;
 Port currentPort;
@@ -840,23 +841,28 @@ void real_loop(void)
         } else {
           instructions = scheduler.getRoute();
         }
-        
+        robot.mypath = scheduler.getPath();
+        robot.mypathsize = scheduler.getPathSize();
         instructionCounter = 0;
+        pathCounter = 0;
       }
       
       if (instructions[instructionCounter] == "Line" && (instructions[instructionCounter+1] != "Drop" || instructions[instructionCounter+1] != "Pick")){
         Serial.println("Case FLINE");
+        Serial.printf("Mypath: ");
+        Serial.println(robot.mypath[pathCounter]);
         robot.state = FLINE;
       }
-      // else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Left" && instructions[instructionCounter+2] == "Pick")){
-      //   // instructions[instructionCounter] = "Line";
-      //   // instructions[instructionCounter + 1] = "Right";
-      //   // instructions[instructionCounter + 2] = "Left";
-      //   // instructions[instructionCounter + 3] = "Pick";
-      //   instructions.insert(instructions.begin()+2, "Line");
-      //   Serial.println("CASO PROBLEMA1");
-      //   robot.state = FLINE;
-      // }
+      else if (pathCounter <= 0 && instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Left" && instructions[instructionCounter+2] == "Pick")){
+        // instructions[instructionCounter] = "Line";
+        // instructions[instructionCounter + 1] = "Right";
+        // instructions[instructionCounter + 2] = "Left";
+        // instructions[instructionCounter + 3] = "Pick";
+        instructions.insert(instructions.begin()+2, "Line");
+        Serial.println("CASO PROBLEMA1");
+        pathCounter++;
+        robot.state = FLINE;
+      }
       // else if (instructions[instructionCounter] == "Right" && (instructions[instructionCounter+1] == "Line" && instructions[instructionCounter+2] == "Left" && instructions[instructionCounter+3] == "Pick")){
       //   instructions[instructionCounter] = "Line";
       //   instructions[instructionCounter + 1] = "Line";
@@ -1024,6 +1030,8 @@ void real_loop(void)
         currentBox = scheduler.getBox();
         currentPort = scheduler.getAvailablePort(currentBox);
         instructions = scheduler.getRoute();
+        robot.mypath = scheduler.getPath();
+        robot.mypathsize = scheduler.getPathSize();
         // Serial.println("Aqui");
         for(auto inst: instructions) {
           Serial.println(inst.c_str());

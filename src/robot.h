@@ -47,6 +47,9 @@ class robot_t {
   float ds, dtheta;
   float rel_s, rel_theta;
   float x, y, theta;
+
+  int *mypath;
+  int mypathsize;
   
   byte state;
   uint32_t tis, tes;

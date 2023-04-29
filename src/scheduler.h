@@ -17,6 +17,8 @@ private:
     std::vector<Port> deliveryNodesA;
     int currentPosition;
     Node *nodeVec;
+    int *path; 
+    int pathSize;
 public:
     Scheduler(int startPosition);
     ~Scheduler();
@@ -27,6 +29,8 @@ public:
     Box getBox();
     Port getAvailablePort(Box currentBox);
     Node* getNodeVec();
+    int * getPath();
+    int getPathSize();
 };
 
 Scheduler::Scheduler(int startPosition) {
@@ -114,8 +118,9 @@ std::vector<std::string> Scheduler::getRoute(Box box, Port destPort) {
     // If box is waiting then we need to pick it up
     dijkstra.findPath(graph, currentPosition, destPort.pos);
         
-    auto path = dijkstra.getPathArray();
+    path = dijkstra.getPathArray();
     currentPosition = path[dijkstra.getPathSize() - 1];
+    pathSize = dijkstra.getPathSize();
     // Serial.printf("Minimun Path is: [ ");
     // int a= dijkstra.getPathSize();
     // for(int i = 0; i < a; i++){
@@ -142,13 +147,14 @@ std::vector<std::string> Scheduler::getRoute() {
     // If box is waiting then we need to pick it up
     dijkstra.findPath(graph, currentPosition, box.pos);
         
-    auto path = dijkstra.getPathArray();
+    path = dijkstra.getPathArray();
     currentPosition = path[dijkstra.getPathSize() - 1];
 
     nodeVec = (Node *)calloc(N_NODES, sizeof(Node));
     dir.nodeVector(nodeVec);
 
     int size = dijkstra.getPathSize();
+    pathSize = dijkstra.getPathSize();
     std::vector<std::string> dirVec = dir.definePath(path, size, nodeVec);
       
     return dirVec;
@@ -187,4 +193,12 @@ Port Scheduler::getAvailablePort(Box currentBox) {
 
 Node* Scheduler::getNodeVec() {
     return nodeVec;
+}
+
+int * Scheduler::getPath() {
+    return path;
+}
+
+int Scheduler::getPathSize(){
+    return pathSize;
 }

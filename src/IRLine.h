@@ -44,6 +44,7 @@ typedef enum{
   RIGHTLINE,// 7
   START,    // 8
   SETUP,    // 9
+  DROPBV
   // FOLEFTFO, // 10
   // FORIGHTFO // 11
 }estados; 

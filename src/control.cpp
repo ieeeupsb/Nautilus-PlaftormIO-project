@@ -100,7 +100,22 @@ void control(robot_t& robot)
       robot.setState(STOP);
     
  
-    }
+    } else if(robot.state == DROPBV && robot.tis > 1300){
+      robot.rel_s = 0;
+      robot.rel_theta = 0;
+      //robot.setState(22);
+      robot.setState(21);
+
+      
+    } else if(robot.state == 21 && robot.rel_s < -0.08){
+    robot.rel_theta = 0;
+    robot.setState(22);
+
+      
+    } else if(robot.state == 22 && robot.rel_theta < radians(-160)){
+      IRLine.crosses = 0;
+      robot.rel_theta = 0;
+      robot.setState(STOP);
     //  if(robot.state == 0 && robot.tof_dist > 0.10 && robot.prev_tof_dist < 0.05 && robot.tis > 3000) {
     //   robot.rel_s = 0;
     //   robot.setState(1);
