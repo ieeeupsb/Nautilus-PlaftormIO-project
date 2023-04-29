@@ -107,7 +107,7 @@ void control(robot_t& robot)
       robot.setState(21);
 
       
-    } else if(robot.state == 21 && robot.rel_s < -0.12){
+    } else if(robot.state == 21 && robot.rel_s < -0.20){
     robot.rel_theta = 0;
     robot.setState(22);
 

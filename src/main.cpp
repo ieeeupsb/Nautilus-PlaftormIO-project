@@ -798,8 +798,8 @@ void real_loop(void)
     // // // Serial.print(F(" Iman: "));
     // // // serial_print_format(robot.solenoid_state, 4);
 
-    // // // Serial.print(F(" Rel_Theta: "));
-    // // // serial_print_format(robot.rel_theta, 4);
+    Serial.print(F(" Rel_Theta: "));
+    serial_print_format(robot.rel_theta, 4);
 
     // // // Serial.print(F(" Rel_s: "));
     // // // serial_print_format(robot.rel_s, 4);
