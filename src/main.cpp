@@ -928,6 +928,7 @@ void real_loop(void)
                   Serial.println(irrecvbuffer);
                   robot.state = SETUP;
                   //teste
+                  //teste
                 }
               } else {
                 Serial.write(irrecvdata);
