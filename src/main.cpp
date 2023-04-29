@@ -833,7 +833,7 @@ void real_loop(void)
     serial_print_format(instructionCounter, 4);
 
 
-    if(robot.state == STOP) {
+    if(robot.state == 101) {
 
       if (instructionCounter == instructions.size()) {
         if (currentBox.status == HOLDING) {
