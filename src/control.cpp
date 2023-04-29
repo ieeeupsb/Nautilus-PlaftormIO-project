@@ -107,7 +107,7 @@ void control(robot_t& robot)
       robot.setState(21);
 
       
-    } else if(robot.state == 21 && robot.rel_s < -0.08){
+    } else if(robot.state == 21 && robot.rel_s < -0.12){
     robot.rel_theta = 0;
     robot.setState(22);
 
@@ -237,8 +237,11 @@ void control(robot_t& robot)
     if (robot.state == START) {         // Robot Stoped            
       robot.solenoid_state = 0;
       robot.setRobotVW(0, 0);
+    } 
+    else if (robot.state == DROPBV) {  
+      //  robot.followLineRight(IRLine, robot.follow_v, robot.follow_k);
+       robot.followLine(IRLine);
     }
-
     // if (robot.state == 0) {         // Robot Stoped            
     //   robot.solenoid_state = 0;
     //   robot.setRobotVW(0, 0);
