@@ -36,23 +36,42 @@ void control(robot_t& robot)
       
       
     } else if(robot.state == PICKB && robot.tof_dist < 0.04){ 
-      robot.setState(11); 
+      robot.setState(41); 
       
       
-    } else if(robot.state == 11 && robot.tis > 1000){
+    } else if(robot.state == 41 && robot.tis > 1000){
       robot.rel_s = 0;
-      robot.setState(12); 
+      robot.setState(42); 
       
       
-    } else if(robot.state == 12 && robot.rel_s < -0.08){
+    } else if(robot.state == 42 && robot.rel_s < -0.08){
       robot.rel_theta = 0;
-      robot.setState(13); 
+      robot.setState(43); 
       
       
-    } else if(robot.state == 13 && robot.rel_theta < radians(-160)){
+    } else if(robot.state == 43 && robot.rel_theta < radians(-160)){
       robot.rel_theta = 0;
       IRLine.crosses = 0;
       robot.setState(STOP); 
+
+    } else if(robot.state == PICKBV && robot.tof_dist < 0.04){ 
+      robot.setState(51); 
+      
+      
+    } else if(robot.state == 51 && robot.tis > 1500){
+      robot.rel_s = 0;
+      robot.setState(52); 
+      
+      
+    } else if(robot.state == 52 && robot.rel_s < -0.17){
+      robot.rel_theta = 0;
+      robot.setState(53); 
+      
+      
+    } else if(robot.state == 53 && robot.rel_theta < radians(-160)){
+      robot.rel_theta = 0;
+      IRLine.crosses = 0;
+      robot.setState(STOP);
 
       
     // } else if(robot.state == 14 && IRLine.crosses >= 1){
@@ -104,12 +123,12 @@ void control(robot_t& robot)
       robot.rel_s = 0;
       robot.rel_theta = 0;
       //robot.setState(22);
-      robot.setState(21);
+      robot.setState(31);
 
       
-    } else if(robot.state == 31 && robot.rel_s < -0.24){
+    } else if(robot.state == 31 && robot.rel_s < -0.17){
     robot.rel_theta = 0;
-    robot.setState(22);
+    robot.setState(32);
 
       
     } else if(robot.state == 32 && robot.rel_theta < radians(-160)){
@@ -190,16 +209,34 @@ void control(robot_t& robot)
        robot.followLine(IRLine);
        
 
-     } else if (robot.state == 11) {  //iman on and get box
+     } else if (robot.state == 41) {  //iman on and get box
        robot.solenoid_state = 1;
        robot.followLine(IRLine);
        
 
-     } else if (robot.state == 12) {  //go back a little
+     } else if (robot.state == 42) {  //go back a little
        robot.setRobotVW(-0.12, 0); //v was 0.1
        
 
-     } else if (robot.state == 13) {  //turn 180
+     } else if (robot.state == 43) {  //turn 180
+       robot.setRobotVW(0, -2.5); //w was 3
+
+
+
+    } else if (robot.state == PICKBV) {  //follow until find box
+       robot.followLine(IRLine);
+       
+
+     } else if (robot.state == 51) {  //iman on and get box
+       robot.solenoid_state = 1;
+       robot.followLine(IRLine);
+       
+
+     } else if (robot.state == 52) {  //go back a little
+       robot.setRobotVW(-0.12, 0); //v was 0.1
+       
+
+     } else if (robot.state == 53) {  //turn 180
        robot.setRobotVW(0, -2.5); //w was 3
        
 

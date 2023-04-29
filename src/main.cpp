@@ -833,7 +833,7 @@ void real_loop(void)
     serial_print_format(instructionCounter, 4);
 
 
-    if(robot.state == 101) {
+    if(robot.state == STOP || robot.state == 101) {
 
       if (instructionCounter == instructions.size()) {
         if (currentBox.status == HOLDING) {
@@ -893,19 +893,17 @@ void real_loop(void)
         robot.state = TRIGHT;
       }
       else if (instructions[instructionCounter] == "Pick") {
-        robot.state = PICKB;
+        if(currentBox.pos == 0 || currentBox.pos == 1 || currentBox.pos == 2 || currentBox.pos == 3) robot.state = PICKB;
+
+        if(currentBox.pos == 16 || currentBox.pos == 23|| currentBox.pos == 12 || currentBox.pos == 19) robot.state = PICKBV;
         // Assuming that after this state the box is picked
         currentBox.status = HOLDING;
         Serial.println("Case STOP");
       }
       else if (instructions[instructionCounter] == "Drop") {
         Serial.println("Case DROP");
-        if(currentBox.color == BLUE)
-        robot.state = DROPB;
+        if(currentBox.color == BLUE) robot.state = DROPB;
         // Assuming that the box will be delivered after this state
-        currentBox.status = DELIVERED;
-        currentPort = scheduler.getAvailablePort(currentBox);
-        currentPort.occupied = true;
         // Serial.println();
         // Serial.printf("Current Port ");
         // Serial.print(currentPort.pos);
@@ -914,6 +912,7 @@ void real_loop(void)
         if(currentBox.color == GREEN || currentBox.color == RED){
           robot.state = DROPBV;
           Serial.println("CAIXA VERDE OU VERMELHA");
+          }
           // Box newBox;
           // newBox.num = currentBox.num;
           // newBox.pos = currentBox.pos++;
@@ -937,7 +936,11 @@ void real_loop(void)
           //   newBox.status == WAINTING;
           //   Serial.printf("RED");
           // }
-        }
+        //}
+        currentBox.status = DELIVERED;
+        currentPort = scheduler.getAvailablePort(currentBox);
+        currentPort.occupied = true;
+        //scheduler.updatePorts(currentPort);
         currentBox = scheduler.getBox();
       }else if (instructions[instructionCounter] == "Left"){
         Serial.println("Case LEFTLINE");      
