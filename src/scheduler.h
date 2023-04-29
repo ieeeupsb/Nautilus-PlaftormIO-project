@@ -16,6 +16,8 @@ private:
     std::vector<Port> deliveryPorts;
     int currentPosition;
     Node *nodeVec;
+    Dijkstra dijkstra;
+
 public:
     Scheduler(int startPosition);
     ~Scheduler();
@@ -24,120 +26,114 @@ public:
     std::vector<std::string> getRoute();
     Box getBox();
     Port getAvailablePort();
-    Node* getNodeVec();
+    Node *getNodeVec();
 };
 
-Scheduler::Scheduler(int startPosition) {
+Scheduler::Scheduler(int startPosition)
+{
+    dijkstra = Dijkstra(N_NODES);
     currentPosition = startPosition;
 }
 
-Scheduler::~Scheduler() {
+Scheduler::~Scheduler()
+{
     free(nodeVec);
 }
 
-void Scheduler::setUp(Box *boxes, unsigned int numBoxes) {
-    for (auto deliveryNode : deliveryNodes) {
+void Scheduler::setUp(Box *boxes, unsigned int numBoxes)
+{
+    for (auto deliveryNode : deliveryNodes)
+    {
         Port port;
         port.pos = deliveryNode;
         port.occupied = false;
-        deliveryPorts.push_back(port);        
+        deliveryPorts.push_back(port);
     }
-
 
     for (size_t i = 0; i < numBoxes; i++)
-    {   
+    {
         queue.push(boxes[i]);
     }
-    
-
 }
 
-std::vector<std::string> Scheduler::getRoute(Box box, Port destPort) {
-    Dijkstra dijkstra = Dijkstra(N_NODES);
-    
-    Serial.println();
-    Serial.printf("Porta ");
-    Serial.print(destPort.pos);
-    Serial.printf(".occupied = ");
-    Serial.println(destPort.occupied);
+std::vector<std::string> Scheduler::getRoute(Box box, Port destPort)
+{
+    Serial.printf("Porta: %d Occupied: %d\n", destPort.pos, destPort.occupied);
+
     // TODO: Chose which port to go based on the color
-    if(destPort.occupied == true){
-        for(int i = 0; i<deliveryPorts.size(); i++){
+    if(box.color == Color::BLUE) {
+        if(destPort.occupied == true)
+            for(int i = 0; i < deliveryPorts.size(); i++)
+                if(deliveryPorts[i].pos == destPort.pos)
+                    deliveryPorts[i].occupied = destPort.occupied;
+        
+        destPort = getAvailablePort();
+        Serial.printf("Porta: %d Occupied: %d\n", destPort.pos, destPort.occupied);
+    } else if (box.color == Color::GREEN) {
+        if(destPort.occupied == true)
+            for(int i = 0; i < deliveryPorts.size(); i++)
+                if(deliveryPorts[i].pos == destPort.pos)
+                    deliveryPorts[i].occupied = destPort.occupied;
+
+        Serial.printf("Porta: %d Occupied: %d\n", destPort.pos, destPort.occupied);
+    }
+
+    if (destPort.occupied == true)
+    {
+        for (int i = 0; i < deliveryPorts.size(); i++)
+        {
             if (deliveryPorts[i].pos == destPort.pos)
-                deliveryPorts[i].occupied = destPort.occupied; 
+                deliveryPorts[i].occupied = destPort.occupied;
         }
         destPort = getAvailablePort();
 
-        Serial.println();
-        Serial.printf("Porta ");
-        Serial.print(destPort.pos);
-        Serial.printf(".occupied = ");
-        Serial.println(destPort.occupied);
+        Serial.printf("Porta: %d Occupied: %d\n", destPort.pos, destPort.occupied);
     }
-    else {
-        Serial.println();
-        Serial.printf("Porta ");
-        Serial.print(destPort.pos);
-        Serial.printf(".occupied = ");
-        Serial.println(destPort.occupied);
+    else
+    {
+        Serial.printf("Porta: %d Occupied: %d\n", destPort.pos, destPort.occupied);
     }
 
-    // Serial.printf("No de destino: ");
-    // Serial.println(destPort.pos);
-    // If box is waiting then we need to pick it up
     dijkstra.findPath(graph, currentPosition, destPort.pos);
-        
     auto path = dijkstra.getPathArray();
+    int size = dijkstra.getPathSize();
     currentPosition = path[dijkstra.getPathSize() - 1];
-    // Serial.printf("Minimun Path is: [ ");
-    // int a= dijkstra.getPathSize();
-    // for(int i = 0; i < a; i++){
-    //     Serial.print(path[i]);
-    //     Serial.printf(" ");
-    // }
-    // Serial.println("]");
 
     nodeVec = (Node *)calloc(N_NODES, sizeof(Node));
     dir.nodeVector(nodeVec);
-
-    int size = dijkstra.getPathSize();
-    std::vector<std::string> dirVec = dir.definePath(path, size, nodeVec);
-      
-    return dirVec;
+    return dir.definePath(path, size, nodeVec);
 }
 
-std::vector<std::string> Scheduler::getRoute() {
-    Dijkstra dijkstra = Dijkstra(N_NODES);
-    
+std::vector<std::string> Scheduler::getRoute()
+{
     Box box = queue.top();
     queue.pop();
 
-    // If box is waiting then we need to pick it up
     dijkstra.findPath(graph, currentPosition, box.pos);
-        
     auto path = dijkstra.getPathArray();
+    int size = dijkstra.getPathSize();
     currentPosition = path[dijkstra.getPathSize() - 1];
 
     nodeVec = (Node *)calloc(N_NODES, sizeof(Node));
     dir.nodeVector(nodeVec);
-
-    int size = dijkstra.getPathSize();
-    std::vector<std::string> dirVec = dir.definePath(path, size, nodeVec);
-      
-    return dirVec;
+    return dir.definePath(path, size, nodeVec);
 }
 
-Box Scheduler::getBox() {
+Box Scheduler::getBox()
+{
     return queue.top();
 }
 
-Port Scheduler::getAvailablePort() {
-    for (auto port: deliveryPorts) {
+Port Scheduler::getAvailablePort()
+{
+    for (auto port : deliveryPorts)
+    {
         if (port.occupied == false)
             return port;
     }
 }
 
-Node* Scheduler::getNodeVec() {
+Node *Scheduler::getNodeVec()
+{
     return nodeVec;
 }

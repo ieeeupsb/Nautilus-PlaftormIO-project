@@ -917,7 +917,7 @@ void real_loop(void)
         }
       }
 
-      // if Setup, create boxes and start the setup for the Dijkstra
+      // if   , create boxes and start the setup for the Dijkstra
       if(robot.state == SETUP) {
         for (size_t i = 0; i < 4; i++) {
           Box box;
