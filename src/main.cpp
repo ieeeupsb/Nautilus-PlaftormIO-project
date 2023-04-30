@@ -1017,14 +1017,17 @@ void real_loop(void)
           box.pos = i;
           box.num = i;
           box.status = WAINTING;
-          if(irrecvbuffer[i] == 'w')
+          if(irrecvbuffer[i] == 'w') {
             box.color = RED;
+          }
 
-          else if(irrecvbuffer[i] == 'u')
+          else if(irrecvbuffer[i] == 'u') {
             box.color = GREEN;
+          }
           
-          else if(irrecvbuffer[i] == 'o')
+          else if(irrecvbuffer[i] == 'o') {
             box.color = BLUE;
+          }
           
           boxes[i] = box;
           

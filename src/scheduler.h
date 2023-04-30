@@ -171,12 +171,8 @@ std::vector<std::string> Scheduler::getRoute() {
     // If box is waiting then we need to pick it up
     dijkstra.findPath(graph, currentPosition, box.pos);
 
-     for(auto & node : Scheduler::deliveryNodesA)
-        if(node.pos == box.pos)
-            node.occupied = false;
-
     for(auto & node : Scheduler::deliveryNodesB)
-        if(node.pos == box.pos)
+        if(node.pos + 1 == box.pos)
             node.occupied = false;
         
     path = dijkstra.getPathArray();
