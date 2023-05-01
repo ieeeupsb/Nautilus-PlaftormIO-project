@@ -134,22 +134,22 @@ void robot_t::followLine(IRLine_t& IRLine){
       //somei V de 4 e 0 é 0.05 menor que o resto
 
        if (IRLine.IR_values[2] > 500){
-        setRobotVW(0.11, 0);
+        setRobotVW(0.15, 0);
 
        }else if (IRLine.IR_values[3] > 500){
-        setRobotVW(0.11, 1);
+        setRobotVW(0.15, 1);
 
        }else if (IRLine.IR_values[4] > 500 && IRLine.IR_values[3] > 500){
-        setRobotVW(0.06, 1.5);
+        setRobotVW(0.1, 1.5);
         
       //  }else if (IRLine.IR_values[4] > 500 && IRLine.IR_values[3] <= 500){
       //   setRobotVW(0.065, 1.5);
 
       } else if (IRLine.IR_values[1] > 500){
-        setRobotVW(0.11, -1);
+        setRobotVW(0.15, -1);
 
        }else if (IRLine.IR_values[0] > 500 && IRLine.IR_values[1] > 500){
-        setRobotVW(0.06, -1.5);
+        setRobotVW(0.1, -1.5);
 
       //  }else if (IRLine.IR_values[0] > 500 && IRLine.IR_values[1] <= 500){
       //   setRobotVW(0.065, -1.5);
