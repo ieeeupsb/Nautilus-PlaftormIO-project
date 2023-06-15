@@ -835,6 +835,8 @@ void real_loop(void)
 
     //pedro
 
+    Serial.printf("teste");
+
     if(robot.state == STOP || robot.state == 101) {
 
         if (instructionCounter == instructions.size()) {
