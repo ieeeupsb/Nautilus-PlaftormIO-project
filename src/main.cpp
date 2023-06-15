@@ -836,6 +836,7 @@ void real_loop(void)
     //pedro
 
     Serial.printf("teste");
+    Serial.printf("teste2");
 
     if(robot.state == STOP || robot.state == 101) {
 
